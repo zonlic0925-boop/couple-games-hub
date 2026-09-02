@@ -420,13 +420,328 @@
             position: absolute;
             pointer-events: none;
             font-size: 32px;
-            animation: floatUp 1.2s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+            animation: floatUp 1.2s cubic-bezier(0.2, 0.8, 3.0, 1) forwards;
         }
 
         @keyframes floatUp {
             0% { opacity: 0; transform: translateY(0) scale(0.5); }
             20% { opacity: 1; transform: translateY(-30px) scale(1.3); }
             100% { opacity: 0; transform: translateY(-160px) scale(1.6); }
+        }
+
+        /* ==========================================
+           新增世界经典小游戏专属样式
+           ========================================== */
+        /* 1. 微型坦克大战样式 */
+        .tank-screen-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #111317;
+            overflow: hidden;
+            border-radius: 28px;
+        }
+        #tankCanvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+            touch-action: none;
+        }
+        .tank-controls-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px;
+        }
+        .tank-player-ctrl {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: auto;
+            width: 100%;
+        }
+        .tank-player-ctrl.guest {
+            transform: rotate(180deg);
+        }
+        .dpad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 44px);
+            grid-template-rows: repeat(3, 44px);
+            gap: 4px;
+        }
+        .dpad-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            user-select: none;
+            touch-action: manipulation;
+            transition: background 0.1s, transform 0.1s;
+        }
+        .dpad-btn:active, .dpad-btn.active {
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(0.92);
+        }
+        .fire-btn {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: none;
+            font-weight: 900;
+            font-size: 16px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            transition: transform 0.08s;
+        }
+        .fire-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* 2. 四子棋 Connect 4 样式 */
+        .c4-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            gap: 16px;
+        }
+        .c4-board {
+            background: #1B44BA;
+            padding: 12px;
+            border-radius: 20px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3);
+            width: 100%;
+            max-width: 360px;
+            aspect-ratio: 7/6;
+        }
+        .c4-slot {
+            background: #0E1626;
+            border-radius: 50%;
+            aspect-ratio: 1/1;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.8);
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .c4-piece {
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+            animation: c4Drop 0.35s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+        }
+        .c4-piece.pink {
+            background: radial-gradient(circle at 35% 35%, #FFA5B8, #FF3B69);
+            box-shadow: 0 4px 8px rgba(255, 59, 105, 0.5);
+        }
+        .c4-piece.blue {
+            background: radial-gradient(circle at 35% 35%, #8AC1FF, #1E70EB);
+            box-shadow: 0 4px 8px rgba(30, 112, 235, 0.5);
+        }
+        @keyframes c4Drop {
+            from { transform: translateY(-300%); opacity: 0.5; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .c4-indicators {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            width: 100%;
+            max-width: 360px;
+            height: 32px;
+        }
+        .c4-col-drop-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #aaa;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .c4-col-drop-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        /* 3. 反应拍拍乐 Reaction Duel 样式 */
+        .reaction-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            position: relative;
+            border-radius: 28px;
+            overflow: hidden;
+            background: #111;
+        }
+        .reaction-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            transition: background 0.15s;
+            position: relative;
+        }
+        .reaction-half.guest {
+            background: #18233C;
+            transform: rotate(180deg);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        .reaction-half.host {
+            background: #381C26;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        .reaction-half:active {
+            filter: brightness(1.25);
+        }
+        .reaction-mid-bar {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 15px;
+            color: #FFF;
+            z-index: 10;
+            text-align: center;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .reaction-status-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        /* 4. 贪吃蛇情侣大乱斗样式 */
+        .snake-screen-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #0E121A;
+            border-radius: 28px;
+            overflow: hidden;
+        }
+        #snakeCanvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+            touch-action: none;
+        }
+        .snake-control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .snake-control-row.guest {
+            transform: rotate(180deg);
+        }
+        .snake-btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        .snake-turn-btn {
+            width: 60px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 14px;
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+        .snake-turn-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0.92);
+        }
+
+        /* 5. 国球乒乓球 (Ping Pong) 样式 */
+        .pingpong-screen-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #0E1626;
+            border-radius: 28px;
+            overflow: hidden;
+        }
+        #pingpongCanvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+            touch-action: none;
+        }
+        .sports-rally-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #FFD700;
+            letter-spacing: 1px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 6. 双人草地网球 (Grand Slam Tennis) 样式 */
+        .tennis-screen-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #112818;
+            border-radius: 28px;
+            overflow: hidden;
+        }
+        #tennisCanvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+            touch-action: none;
         }
     </style>
 </head>
@@ -449,7 +764,10 @@
 
             <!-- 分类 -->
             <div class="category-scroll">
-                <div class="category-chip active" onclick="filterCategory('all', this)">全部小游戏</div>
+                <div class="category-chip active" onclick="filterCategory('all', this)">全部小游戏 (9)</div>
+                <div class="category-chip" onclick="filterCategory('sports', this)">🏃 体育竞技</div>
+                <div class="category-chip" onclick="filterCategory('battle', this)">激烈对抗</div>
+                <div class="category-chip" onclick="filterCategory('strategy', this)">策略博弈</div>
                 <div class="category-chip" onclick="filterCategory('physical', this)">即时物理</div>
                 <div class="category-chip" onclick="filterCategory('tacit', this)">默契问答</div>
                 <div class="category-chip" onclick="filterCategory('coop', this)">双人触碰</div>
@@ -457,20 +775,98 @@
 
             <!-- 游戏卡片合集 -->
             <div class="game-list">
+                <!-- 0. 国球乒乓对决 (体育竞技) -->
+                <div class="game-card" data-category="sports battle" onclick="launchGame('pingpong')">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #059669, #10B981);">🏓</div>
+                    <div class="game-info">
+                        <div class="game-title-row">
+                            <span class="game-title">国球乒乓大决战 (Ping Pong)</span>
+                            <span class="badge-hot" style="background:#10B981; color:white;">运动爆款</span>
+                        </div>
+                        <div class="game-desc">国球同屏竞技 · 弧圈球变向切削与疾风扣杀对拉</div>
+                    </div>
+                    <div class="enter-btn">›</div>
+                </div>
+
+                <!-- 00. 草地双人网球 (体育竞技) -->
+                <div class="game-card" data-category="sports battle" onclick="launchGame('tennis')">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #15803D, #84CC16);">🎾</div>
+                    <div class="game-info">
+                        <div class="game-title-row">
+                            <span class="game-title">草地双人网球 (Tennis Duel)</span>
+                            <span class="badge-hot" style="background:#84CC16; color:#064E3B;">温网大满贯</span>
+                        </div>
+                        <div class="game-desc">温布尔登草地激战 · 底线对拉、网前截击与扣杀绝杀</div>
+                    </div>
+                    <div class="enter-btn">›</div>
+                </div>
+
                 <!-- 1. 心动轨道 -->
-                <div class="game-card" data-category="physical" onclick="launchGame('orbit')">
+                <div class="game-card" data-category="physical battle" onclick="launchGame('orbit')">
                     <div class="game-icon" style="background: linear-gradient(135deg, #FF6B8B, #FF8E53);">⚡</div>
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">心动轨道 (Gravity Orbit)</span>
                             <span class="badge-hot">超高能</span>
                         </div>
-                        <div class="game-desc">双人上下半区分屏滑动 · 5次连击激活心动加速</div>
+                        <div class="game-desc">双人上下分屏弹射对攻 · 连击加速心跳对轰</div>
                     </div>
                     <div class="enter-btn">›</div>
                 </div>
 
-                <!-- 2. 默契共振 -->
+                <!-- 2. 微型坦克大战 (新增经典) -->
+                <div class="game-card" data-category="battle" onclick="launchGame('tank')">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #2ED573, #1E90FF);">🎮</div>
+                    <div class="game-info">
+                        <div class="game-title-row">
+                            <span class="game-title">微型坦克对决 (Micro Tanks)</span>
+                            <span class="badge-hot" style="background:#2ED573; color:white;">世界风靡</span>
+                        </div>
+                        <div class="game-desc">经典同屏双人开炮 · 墙体子弹反弹射击与走位博弈</div>
+                    </div>
+                    <div class="enter-btn">›</div>
+                </div>
+
+                <!-- 3. 四子棋对决 (新增经典) -->
+                <div class="game-card" data-category="strategy" onclick="launchGame('connect4')">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #1E70EB, #FF4757);">🔴</div>
+                    <div class="game-info">
+                        <div class="game-title-row">
+                            <span class="game-title">四子棋 (Connect Four)</span>
+                            <span class="badge-hot" style="background:#5352ED; color:white;">全球经典</span>
+                        </div>
+                        <div class="game-desc">世界殿堂级双人桌游 · 垂直重力落子四连珠夺冠</div>
+                    </div>
+                    <div class="enter-btn">›</div>
+                </div>
+
+                <!-- 4. 极速反应拍拍乐 (新增经典) -->
+                <div class="game-card" data-category="battle" onclick="launchGame('reaction')">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #FFA502, #FF4757);">⚡</div>
+                    <div class="game-info">
+                        <div class="game-title-row">
+                            <span class="game-title">极速反应拍拍 (Reaction Duel)</span>
+                            <span class="badge-hot" style="background:#FFA502; color:white;">情侣心跳</span>
+                        </div>
+                        <div class="game-desc">屏幕变色瞬间拼手速 · 抢拍即赢，误触自爆惩罚</div>
+                    </div>
+                    <div class="enter-btn">›</div>
+                </div>
+
+                <!-- 5. 贪吃蛇情侣大乱斗 (新增经典) -->
+                <div class="game-card" data-category="strategy battle" onclick="launchGame('snake')">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #00D2D3, #54A0FF);">🐍</div>
+                    <div class="game-info">
+                        <div class="game-title-row">
+                            <span class="game-title">贪吃蛇大乱斗 (Snake 1v1)</span>
+                            <span class="badge-hot" style="background:#00D2D3; color:white;">双人对竞</span>
+                        </div>
+                        <div class="game-desc">同屏双蛇争夺爱心糖果 · 蛇身越吃越长，封堵对手走位</div>
+                    </div>
+                    <div class="enter-btn">›</div>
+                </div>
+
+                <!-- 6. 默契共振 -->
                 <div class="game-card" data-category="tacit" onclick="launchGame('syncmind')">
                     <div class="game-icon" style="background: linear-gradient(135deg, #9B51E0, #E040FB);">💭</div>
                     <div class="game-info">
@@ -483,7 +879,7 @@
                     <div class="enter-btn">›</div>
                 </div>
 
-                <!-- 3. 心跳共振 -->
+                <!-- 7. 心跳共振 -->
                 <div class="game-card" data-category="coop" onclick="launchGame('touchheart')">
                     <div class="game-icon" style="background: linear-gradient(135deg, #FF5252, #FF7A00);">❤️</div>
                     <div class="game-info">
@@ -570,6 +966,208 @@
                 用手指按住屏幕上的心，坚持越久，跳动越剧烈，超过 3 秒即可触发漫天爱心喷发！
             </div>
         </div>
+
+        <!-- 游戏 4：微型坦克对决 (Micro Tanks) -->
+        <div id="screen-tank" class="game-screen">
+            <div class="tank-screen-wrap">
+                <canvas id="tankCanvas"></canvas>
+                <div class="tank-controls-layer">
+                    <!-- 上方蓝方操作区 (面向对方，180度倒置) -->
+                    <div class="tank-player-ctrl guest">
+                        <div class="dpad-grid" id="guestTankDpad">
+                            <div></div>
+                            <button class="dpad-btn" data-player="guest" data-dir="up">▲</button>
+                            <div></div>
+                            <button class="dpad-btn" data-player="guest" data-dir="left">◀</button>
+                            <div></div>
+                            <button class="dpad-btn" data-player="guest" data-dir="right">▶</button>
+                            <div></div>
+                            <button class="dpad-btn" data-player="guest" data-dir="down">▼</button>
+                            <div></div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:12px; font-weight:800; color:#4DA6FF;">蓝方坦克 [W/A/S/D]</div>
+                            <button class="fire-btn" style="background: linear-gradient(135deg, #2E86DE, #54A0FF);" id="guestFireBtn">💥<span style="font-size:11px;">开火[F]</span></button>
+                        </div>
+                    </div>
+
+                    <!-- 中间控制与比分栏 -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%; pointer-events:auto; z-index:5;">
+                        <button class="glass-btn" onclick="exitToLobby('screen-tank')">✕ 退出</button>
+                        <div class="score-pill" style="background:rgba(0,0,0,0.7);">
+                            <span style="color:var(--blue-soft);">💙 <span id="tankGuestScore">0</span></span>
+                            <span style="color:#aaa; font-size:12px;" id="tankRoundsLabel">子弹弹射对决</span>
+                            <span style="color:var(--pink-soft);"><span id="tankHostScore">0</span> 💖</span>
+                        </div>
+                        <button class="glass-btn" onclick="resetTankGame()">🔄 重置</button>
+                    </div>
+
+                    <!-- 下方粉方操作区 (面向自己) -->
+                    <div class="tank-player-ctrl host">
+                        <div class="dpad-grid" id="hostTankDpad">
+                            <div></div>
+                            <button class="dpad-btn" data-player="host" data-dir="up">▲</button>
+                            <div></div>
+                            <button class="dpad-btn" data-player="host" data-dir="left">◀</button>
+                            <div></div>
+                            <button class="dpad-btn" data-player="host" data-dir="right">▶</button>
+                            <div></div>
+                            <button class="dpad-btn" data-player="host" data-dir="down">▼</button>
+                            <div></div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:12px; font-weight:800; color:#FF7597;">粉方坦克 [方向键]</div>
+                            <button class="fire-btn" style="background: linear-gradient(135deg, #FF4757, #FF6B81);" id="hostFireBtn">💥<span style="font-size:11px;">开火[Enter]</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏 5：四子棋对决 (Connect 4) -->
+        <div id="screen-connect4" class="game-screen">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <button class="glass-btn" style="background:#E5E5EA; color:#2C2C2E;" onclick="exitToLobby('screen-connect4')">✕ 退出</button>
+                <div class="score-pill" style="background:white; color:#2C2C2E; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                    <span style="color:var(--blue-soft);">蓝方: <span id="c4BlueWins">0</span></span>
+                    <span style="color:#888;">|</span>
+                    <span style="color:var(--pink-soft);">粉方: <span id="c4PinkWins">0</span></span>
+                </div>
+                <button class="glass-btn" style="background:#E5E5EA; color:#2C2C2E;" onclick="resetConnect4()">🔄 重开</button>
+            </div>
+
+            <div class="c4-container">
+                <div style="text-align:center;">
+                    <span id="c4TurnBadge" style="background:#FFE3E8; color:#FF3B69; padding:6px 16px; border-radius:20px; font-size:14px; font-weight:800; display:inline-block;">
+                        当前回合：💖 粉方请落子
+                    </span>
+                </div>
+
+                <!-- 顶部落子指示按钮 -->
+                <div class="c4-indicators" id="c4Indicators"></div>
+
+                <!-- 7x6 棋盘 -->
+                <div class="c4-board" id="c4Board"></div>
+            </div>
+
+            <div style="text-align:center; font-size:12px; color:#8E8E93; line-height:1.4;">
+                点击列按钮或棋盘任意列，重力将棋子降到底部，横/竖/斜连满 4 颗者胜！
+            </div>
+        </div>
+
+        <!-- 游戏 6：极速反应拍拍 (Reaction Duel) -->
+        <div id="screen-reaction" class="game-screen">
+            <div class="reaction-container">
+                <!-- 上方蓝方轻拍区 (倒置) -->
+                <div class="reaction-half guest" id="reactionGuestZone" onclick="handleReactionTap('guest')">
+                    <div class="reaction-status-icon">💙</div>
+                    <div style="font-size:22px; font-weight:900; color:white;">蓝方拍击区</div>
+                    <div style="font-size:14px; color:#8AC1FF; margin-top:4px;" id="reactionGuestScore">得分: 0</div>
+                    <div style="font-size:12px; color:#A4B0BE; margin-top:8px;">[键盘键位：W 或 A]</div>
+                </div>
+
+                <!-- 中间状态提示悬浮栏 -->
+                <div class="reaction-mid-bar" id="reactionMidBar">
+                    <div id="reactionStateText">等待开始...</div>
+                    <div id="reactionSubText" style="font-size:12px; color:#FFD166; margin-top:2px;">变绿瞬间拍击！抢跑扣分</div>
+                </div>
+
+                <!-- 顶部与底部浮动控制按键 -->
+                <div style="position:absolute; top:12px; left:12px; z-index:20;">
+                    <button class="glass-btn" onclick="exitToLobby('screen-reaction')">✕ 退出</button>
+                </div>
+                <div style="position:absolute; top:12px; right:12px; z-index:20;">
+                    <button class="glass-btn" onclick="startReactionRound()">▶ 开始新局</button>
+                </div>
+
+                <!-- 下方粉方轻拍区 -->
+                <div class="reaction-half host" id="reactionHostZone" onclick="handleReactionTap('host')">
+                    <div class="reaction-status-icon">💖</div>
+                    <div style="font-size:22px; font-weight:900; color:white;">粉方拍击区</div>
+                    <div style="font-size:14px; color:#FFA5B8; margin-top:4px;" id="reactionHostScore">得分: 0</div>
+                    <div style="font-size:12px; color:#A4B0BE; margin-top:8px;">[键盘键位：空格 或 Enter]</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏 7：贪吃蛇情侣大乱斗 (Snake Duel) -->
+        <div id="screen-snake" class="game-screen">
+            <div class="snake-screen-wrap">
+                <!-- 蓝蛇操控栏 (上方倒置) -->
+                <div class="snake-control-row guest">
+                    <div style="font-size:13px; font-weight:800; color:#54A0FF;">
+                        蓝蛇: <span id="snakeGuestScore">0</span>
+                    </div>
+                    <div class="snake-btn-group">
+                        <button class="snake-turn-btn" onclick="handleSnakeTurn('guest', 'left')">↺ 左转</button>
+                        <button class="snake-turn-btn" onclick="handleSnakeTurn('guest', 'right')">↻ 右转</button>
+                    </div>
+                </div>
+
+                <!-- 中间比分及退出 -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 12px; background:#0B0E14; z-index:5;">
+                    <button class="glass-btn" onclick="exitToLobby('screen-snake')">✕ 退出</button>
+                    <div style="font-size:13px; font-weight:800; color:#FFD166;" id="snakeStatusBanner">抢夺爱心 · 避免撞击对方与边界</div>
+                    <button class="glass-btn" onclick="startSnakeGame()">🔄 重玩</button>
+                </div>
+
+                <!-- 贪吃蛇画布 -->
+                <canvas id="snakeCanvas"></canvas>
+
+                <!-- 粉蛇操控栏 (下方正常) -->
+                <div class="snake-control-row host">
+                    <div style="font-size:13px; font-weight:800; color:#FF6B81;">
+                        粉蛇: <span id="snakeHostScore">0</span>
+                    </div>
+                    <div class="snake-btn-group">
+                        <button class="snake-turn-btn" onclick="handleSnakeTurn('host', 'left')">↺ 左转</button>
+                        <button class="snake-turn-btn" onclick="handleSnakeTurn('host', 'right')">↻ 右转</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏 8：国球乒乓大决战 (Ping Pong) -->
+        <div id="screen-pingpong" class="game-screen">
+            <div class="pingpong-screen-wrap">
+                <!-- 顶部控制条 -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:#0F2A1D; z-index:10;">
+                    <button class="glass-btn" onclick="exitToLobby('screen-pingpong')">✕ 退出</button>
+                    <div style="text-align:center;">
+                        <span style="font-size:14px; font-weight:900; color:#54A0FF;">蓝方 <span id="ppGuestScore" style="font-size:18px;">0</span></span>
+                        <span style="margin:0 8px; color:rgba(255,255,255,0.4);">:</span>
+                        <span style="font-size:14px; font-weight:900; color:#FF6B81;"><span id="ppHostScore" style="font-size:18px;">0</span> 粉方</span>
+                    </div>
+                    <button class="glass-btn" onclick="startPingPongEngine()">🔄 开球</button>
+                </div>
+                <!-- 回合连击与绝杀提示 -->
+                <div id="ppRallyBadge" class="pingpong-rally-badge">回合对拉: 0</div>
+                <div id="pingpong-hit-effect" class="sports-smash-overlay">扣杀 SPIKE!</div>
+                <!-- 乒乓球台画布 -->
+                <canvas id="pingpongCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- 游戏 9：草地双人网球 (Tennis Duel) -->
+        <div id="screen-tennis" class="game-screen">
+            <div class="tennis-screen-wrap">
+                <!-- 顶部控制条 -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:#0B1F12; z-index:10;">
+                    <button class="glass-btn" onclick="exitToLobby('screen-tennis')">✕ 退出</button>
+                    <div style="text-align:center;">
+                        <span style="font-size:14px; font-weight:900; color:#54A0FF;">蓝方 <span id="tennisGuestScore" style="font-size:18px;">0</span></span>
+                        <span style="margin:0 8px; color:rgba(255,255,255,0.4);">:</span>
+                        <span style="font-size:14px; font-weight:900; color:#FF6B81;"><span id="tennisHostScore" style="font-size:18px;">0</span> 粉方</span>
+                    </div>
+                    <button class="glass-btn" onclick="startTennisEngine()">🔄 发球</button>
+                </div>
+                <!-- 回合连击与截击提示 -->
+                <div id="tennisRallyBadge" class="pingpong-rally-badge">草地相持: 0</div>
+                <div id="tennis-hit-effect" class="sports-smash-overlay">网前绝杀 ACE!</div>
+                <!-- 草地网球场画布 -->
+                <canvas id="tennisCanvas"></canvas>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -579,16 +1177,34 @@
         function launchGame(gameId) {
             document.getElementById('lobby-view').style.display = 'none';
             const screen = document.getElementById(`screen-${gameId}`);
-            screen.style.display = 'flex';
+            if (screen) screen.style.display = 'flex';
 
             if (gameId === 'orbit') {
                 startOrbitEngine();
+            } else if (gameId === 'tank') {
+                startTankEngine();
+            } else if (gameId === 'connect4') {
+                initConnect4();
+            } else if (gameId === 'reaction') {
+                startReactionRound();
+            } else if (gameId === 'snake') {
+                startSnakeGame();
+            } else if (gameId === 'pingpong') {
+                startPingPongEngine();
+            } else if (gameId === 'tennis') {
+                startTennisEngine();
             }
         }
 
         function exitToLobby(screenId) {
             if (orbitAnimId) cancelAnimationFrame(orbitAnimId);
-            document.getElementById(screenId).style.display = 'none';
+            if (tankAnimId) cancelAnimationFrame(tankAnimId);
+            if (snakeInterval) clearInterval(snakeInterval);
+            if (reactionTimer) clearTimeout(reactionTimer);
+            if (typeof stopPingPongEngine === 'function') stopPingPongEngine();
+            if (typeof stopTennisEngine === 'function') stopTennisEngine();
+            const screen = document.getElementById(screenId);
+            if (screen) screen.style.display = 'none';
             document.getElementById('lobby-view').style.display = 'flex';
         }
 
@@ -597,7 +1213,8 @@
             chip.classList.add('active');
 
             document.querySelectorAll('.game-card').forEach(card => {
-                if (cat === 'all' || card.dataset.category === cat) {
+                const cats = card.dataset.category || '';
+                if (cat === 'all' || cats.includes(cat)) {
                     card.style.display = 'flex';
                 } else {
                     card.style.display = 'none';
@@ -919,6 +1536,1367 @@
             h.style.bottom = '80px';
             document.getElementById(containerId).appendChild(h);
             setTimeout(() => h.remove(), 1200);
+        }
+
+        // ==========================================
+        // 6. 微型坦克对决 (Micro Tanks)
+        // ==========================================
+        let tankAnimId = null;
+        let tankCanvas = document.getElementById('tankCanvas');
+        let tCtx = null;
+        let tankGuestScore = 0;
+        let tankHostScore = 0;
+
+        const tankWalls = [
+            { x: 0.18, y: 0.28, w: 0.22, h: 0.03 },
+            { x: 0.60, y: 0.28, w: 0.22, h: 0.03 },
+            { x: 0.38, y: 0.47, w: 0.24, h: 0.06 },
+            { x: 0.18, y: 0.69, w: 0.22, h: 0.03 },
+            { x: 0.60, y: 0.69, w: 0.22, h: 0.03 }
+        ];
+
+        let tankGuest = { x: 0, y: 0, angle: Math.PI / 2, color: '#2E86DE', speed: 2.2, r: 15 };
+        let tankHost = { x: 0, y: 0, angle: -Math.PI / 2, color: '#FF4757', speed: 2.2, r: 15 };
+        let tankBullets = [];
+        let tankParticles = [];
+        let tankInputs = {
+            guest: { up: false, down: false, left: false, right: false },
+            host: { up: false, down: false, left: false, right: false }
+        };
+
+        function resetTankGame() {
+            if (!tankCanvas) return;
+            const w = tankCanvas.width;
+            const h = tankCanvas.height;
+            tankGuest.x = w * 0.5;
+            tankGuest.y = h * 0.12;
+            tankGuest.angle = Math.PI / 2;
+            tankHost.x = w * 0.5;
+            tankHost.y = h * 0.88;
+            tankHost.angle = -Math.PI / 2;
+            tankBullets = [];
+            tankParticles = [];
+            document.getElementById('tankGuestScore').innerText = tankGuestScore;
+            document.getElementById('tankHostScore').innerText = tankHostScore;
+        }
+
+        function fireBullet(who) {
+            const t = who === 'guest' ? tankGuest : tankHost;
+            const bx = t.x + Math.cos(t.angle) * (t.r + 6);
+            const by = t.y + Math.sin(t.angle) * (t.r + 6);
+            const speed = 4.8;
+            tankBullets.push({
+                x: bx,
+                y: by,
+                vx: Math.cos(t.angle) * speed,
+                vy: Math.sin(t.angle) * speed,
+                owner: who,
+                bounces: 0,
+                maxBounces: 2,
+                life: 260
+            });
+            for (let i = 0; i < 5; i++) {
+                tankParticles.push({
+                    x: bx, y: by,
+                    vx: (Math.random() - 0.5) * 2 + Math.cos(t.angle) * 1.5,
+                    vy: (Math.random() - 0.5) * 2 + Math.sin(t.angle) * 1.5,
+                    color: '#FFD166',
+                    life: 15,
+                    maxLife: 15,
+                    size: 3
+                });
+            }
+        }
+
+        function spawnTankExplosion(x, y, color) {
+            for (let i = 0; i < 28; i++) {
+                const ang = Math.random() * Math.PI * 2;
+                const spd = 1 + Math.random() * 4;
+                tankParticles.push({
+                    x, y,
+                    vx: Math.cos(ang) * spd,
+                    vy: Math.sin(ang) * spd,
+                    color: Math.random() > 0.4 ? color : '#FFA502',
+                    life: 30,
+                    maxLife: 30,
+                    size: 2 + Math.random() * 4
+                });
+            }
+        }
+
+        function updateTankControls() {
+            [
+                { t: tankGuest, inp: tankInputs.guest },
+                { t: tankHost, inp: tankInputs.host }
+            ].forEach(({ t, inp }) => {
+                if (inp.left) t.angle -= 0.055;
+                if (inp.right) t.angle += 0.055;
+                let moveStep = 0;
+                if (inp.up) moveStep += t.speed;
+                if (inp.down) moveStep -= t.speed * 0.7;
+
+                if (moveStep !== 0) {
+                    const nx = t.x + Math.cos(t.angle) * moveStep;
+                    const ny = t.y + Math.sin(t.angle) * moveStep;
+                    const cw = tankCanvas.width;
+                    const ch = tankCanvas.height;
+
+                    if (nx > t.r && nx < cw - t.r) {
+                        let blockedX = false;
+                        tankWalls.forEach(wall => {
+                            const wx = wall.x * cw, wy = wall.y * ch, ww = wall.w * cw, wh = wall.h * ch;
+                            if (nx + t.r > wx && nx - t.r < wx + ww && t.y + t.r > wy && t.y - t.r < wy + wh) blockedX = true;
+                        });
+                        if (!blockedX) t.x = nx;
+                    }
+
+                    if (ny > t.r && ny < ch - t.r) {
+                        let blockedY = false;
+                        tankWalls.forEach(wall => {
+                            const wx = wall.x * cw, wy = wall.y * ch, ww = wall.w * cw, wh = wall.h * ch;
+                            if (t.x + t.r > wx && t.x - t.r < wx + ww && ny + t.r > wy && ny - t.r < wy + wh) blockedY = true;
+                        });
+                        if (!blockedY) t.y = ny;
+                    }
+                }
+            });
+        }
+
+        function updateTankPhysics() {
+            const cw = tankCanvas.width;
+            const ch = tankCanvas.height;
+
+            for (let i = tankBullets.length - 1; i >= 0; i--) {
+                const b = tankBullets[i];
+                b.x += b.vx;
+                b.y += b.vy;
+                b.life--;
+
+                if (b.x < 6 || b.x > cw - 6) {
+                    b.vx = -b.vx;
+                    b.bounces++;
+                    b.x = Math.max(6, Math.min(cw - 6, b.x));
+                }
+                if (b.y < 6 || b.y > ch - 6) {
+                    b.vy = -b.vy;
+                    b.bounces++;
+                    b.y = Math.max(6, Math.min(ch - 6, b.y));
+                }
+
+                tankWalls.forEach(wall => {
+                    const wx = wall.x * cw, wy = wall.y * ch, ww = wall.w * cw, wh = wall.h * ch;
+                    if (b.x >= wx && b.x <= wx + ww && b.y >= wy && b.y <= wy + wh) {
+                        const dl = Math.abs(b.x - wx);
+                        const dr = Math.abs(b.x - (wx + ww));
+                        const dt = Math.abs(b.y - wy);
+                        const db = Math.abs(b.y - (wy + wh));
+                        const min = Math.min(dl, dr, dt, db);
+                        if (min === dl || min === dr) b.vx = -b.vx;
+                        else b.vy = -b.vy;
+                        b.bounces++;
+                    }
+                });
+
+                const distToGuest = Math.hypot(b.x - tankGuest.x, b.y - tankGuest.y);
+                if (distToGuest < tankGuest.r + 4) {
+                    spawnTankExplosion(tankGuest.x, tankGuest.y, tankGuest.color);
+                    tankHostScore++;
+                    document.getElementById('tankHostScore').innerText = tankHostScore;
+                    tankBullets.splice(i, 1);
+                    setTimeout(resetTankGame, 800);
+                    continue;
+                }
+
+                const distToHost = Math.hypot(b.x - tankHost.x, b.y - tankHost.y);
+                if (distToHost < tankHost.r + 4) {
+                    spawnTankExplosion(tankHost.x, tankHost.y, tankHost.color);
+                    tankGuestScore++;
+                    document.getElementById('tankGuestScore').innerText = tankGuestScore;
+                    tankBullets.splice(i, 1);
+                    setTimeout(resetTankGame, 800);
+                    continue;
+                }
+
+                if (b.bounces > b.maxBounces || b.life <= 0) {
+                    tankBullets.splice(i, 1);
+                }
+            }
+
+            for (let i = tankParticles.length - 1; i >= 0; i--) {
+                const p = tankParticles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+                if (p.life <= 0) tankParticles.splice(i, 1);
+            }
+        }
+
+        function drawTanks() {
+            if (!tCtx) return;
+            const cw = tankCanvas.width;
+            const ch = tankCanvas.height;
+
+            tCtx.fillStyle = '#0F131C';
+            tCtx.fillRect(0, 0, cw, ch);
+
+            tCtx.strokeStyle = 'rgba(255,255,255,0.03)';
+            tCtx.lineWidth = 1;
+            const step = 24;
+            for (let x = 0; x < cw; x += step) {
+                tCtx.beginPath(); tCtx.moveTo(x, 0); tCtx.lineTo(x, ch); tCtx.stroke();
+            }
+            for (let y = 0; y < ch; y += step) {
+                tCtx.beginPath(); tCtx.moveTo(0, y); tCtx.lineTo(cw, y); tCtx.stroke();
+            }
+
+            tankWalls.forEach(wall => {
+                const wx = wall.x * cw, wy = wall.y * ch, ww = wall.w * cw, wh = wall.h * ch;
+                tCtx.fillStyle = '#2C3549';
+                tCtx.fillRect(wx, wy, ww, wh);
+                tCtx.strokeStyle = '#4A5568';
+                tCtx.lineWidth = 2;
+                tCtx.strokeRect(wx, wy, ww, wh);
+            });
+
+            [tankGuest, tankHost].forEach(t => {
+                tCtx.save();
+                tCtx.translate(t.x, t.y);
+                tCtx.rotate(t.angle);
+
+                tCtx.fillStyle = '#1A1E29';
+                tCtx.fillRect(-t.r * 1.1, -t.r * 1.05, t.r * 2.2, t.r * 0.45);
+                tCtx.fillRect(-t.r * 1.1, t.r * 0.6, t.r * 2.2, t.r * 0.45);
+
+                tCtx.fillStyle = t.color;
+                tCtx.beginPath();
+                tCtx.roundRect(-t.r * 0.9, -t.r * 0.75, t.r * 1.8, t.r * 1.5, 4);
+                tCtx.fill();
+
+                tCtx.fillStyle = '#FFFFFF';
+                tCtx.beginPath();
+                tCtx.arc(0, 0, t.r * 0.55, 0, Math.PI * 2);
+                tCtx.fill();
+
+                tCtx.fillStyle = t.color;
+                tCtx.fillRect(0, -2.5, t.r * 1.35, 5);
+
+                tCtx.restore();
+            });
+
+            tankBullets.forEach(b => {
+                tCtx.fillStyle = b.owner === 'guest' ? '#70A1FF' : '#FF6B81';
+                tCtx.shadowColor = b.owner === 'guest' ? '#70A1FF' : '#FF6B81';
+                tCtx.shadowBlur = 8;
+                tCtx.beginPath();
+                tCtx.arc(b.x, b.y, 4, 0, Math.PI * 2);
+                tCtx.fill();
+                tCtx.shadowBlur = 0;
+            });
+
+            tankParticles.forEach(p => {
+                const alpha = p.life / p.maxLife;
+                tCtx.fillStyle = p.color;
+                tCtx.globalAlpha = alpha;
+                tCtx.beginPath();
+                tCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                tCtx.fill();
+                tCtx.globalAlpha = 1.0;
+            });
+        }
+
+        function tankLoop() {
+            updateTankControls();
+            updateTankPhysics();
+            drawTanks();
+            tankAnimId = requestAnimationFrame(tankLoop);
+        }
+
+        function startTankEngine() {
+            tankCanvas = document.getElementById('tankCanvas');
+            const wrap = tankCanvas.parentElement;
+            tankCanvas.width = wrap.clientWidth;
+            tankCanvas.height = wrap.clientHeight;
+            tCtx = tankCanvas.getContext('2d');
+            resetTankGame();
+            if (tankAnimId) cancelAnimationFrame(tankAnimId);
+            tankAnimId = requestAnimationFrame(tankLoop);
+        }
+
+        function setupTankTouchEvents() {
+            const attach = (btn, player, dir) => {
+                const start = (e) => { e.preventDefault(); tankInputs[player][dir] = true; };
+                const end = (e) => { e.preventDefault(); tankInputs[player][dir] = false; };
+                btn.addEventListener('touchstart', start, { passive: false });
+                btn.addEventListener('touchend', end, { passive: false });
+                btn.addEventListener('touchcancel', end);
+                btn.addEventListener('mousedown', start);
+                btn.addEventListener('mouseup', end);
+                btn.addEventListener('mouseleave', end);
+            };
+
+            document.querySelectorAll('.dpad-btn').forEach(btn => {
+                const player = btn.dataset.player;
+                const dir = btn.dataset.dir;
+                attach(btn, player, dir);
+            });
+
+            const gFire = document.getElementById('guestFireBtn');
+            const hFire = document.getElementById('hostFireBtn');
+            if (gFire) {
+                gFire.addEventListener('touchstart', (e) => { e.preventDefault(); fireBullet('guest'); }, { passive: false });
+                gFire.addEventListener('click', () => fireBullet('guest'));
+            }
+            if (hFire) {
+                hFire.addEventListener('touchstart', (e) => { e.preventDefault(); fireBullet('host'); }, { passive: false });
+                hFire.addEventListener('click', () => fireBullet('host'));
+            }
+        }
+        setupTankTouchEvents();
+
+        // ==========================================
+        // 7. 四子棋对决 (Connect 4)
+        // ==========================================
+        const C4_ROWS = 6;
+        const C4_COLS = 7;
+        let c4Grid = [];
+        let c4CurrentTurn = 'pink'; // 'pink' (host) or 'blue' (guest)
+        let c4GameOver = false;
+        let c4PinkWins = 0;
+        let c4BlueWins = 0;
+
+        function initConnect4() {
+            c4Grid = Array(C4_ROWS).fill(null).map(() => Array(C4_COLS).fill(null));
+            c4CurrentTurn = 'pink';
+            c4GameOver = false;
+            updateC4TurnUI();
+            renderC4Board();
+            renderC4Indicators();
+        }
+
+        function resetConnect4() {
+            initConnect4();
+        }
+
+        function updateC4TurnUI() {
+            const badge = document.getElementById('c4TurnBadge');
+            if (c4GameOver) return;
+            if (c4CurrentTurn === 'pink') {
+                badge.style.background = '#FFE3E8';
+                badge.style.color = '#FF3B69';
+                badge.innerHTML = '当前回合：💖 粉方请落子';
+            } else {
+                badge.style.background = '#E1F0FF';
+                badge.style.color = '#007AFF';
+                badge.innerHTML = '当前回合：💙 蓝方请落子';
+            }
+            document.getElementById('c4PinkWins').innerText = c4PinkWins;
+            document.getElementById('c4BlueWins').innerText = c4BlueWins;
+        }
+
+        function renderC4Indicators() {
+            const indContainer = document.getElementById('c4Indicators');
+            indContainer.innerHTML = '';
+            for (let c = 0; c < C4_COLS; c++) {
+                const btn = document.createElement('button');
+                btn.className = 'c4-indicator-btn';
+                btn.innerText = '▼';
+                btn.onclick = () => dropPiece(c);
+                indContainer.appendChild(btn);
+            }
+        }
+
+        function renderC4Board() {
+            const board = document.getElementById('c4Board');
+            board.innerHTML = '';
+            for (let r = 0; r < C4_ROWS; r++) {
+                for (let c = 0; c < C4_COLS; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'c4-cell';
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    const val = c4Grid[r][c];
+                    if (val === 'pink') cell.classList.add('pink');
+                    if (val === 'blue') cell.classList.add('blue');
+                    cell.onclick = () => dropPiece(c);
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function dropPiece(col) {
+            if (c4GameOver) return;
+            let targetRow = -1;
+            for (let r = C4_ROWS - 1; r >= 0; r--) {
+                if (!c4Grid[r][col]) {
+                    targetRow = r;
+                    break;
+                }
+            }
+            if (targetRow === -1) return; // 该列已满
+
+            c4Grid[targetRow][col] = c4CurrentTurn;
+            renderC4Board();
+
+            const winLine = checkC4Win(targetRow, col, c4CurrentTurn);
+            if (winLine) {
+                c4GameOver = true;
+                const badge = document.getElementById('c4TurnBadge');
+                if (c4CurrentTurn === 'pink') {
+                    c4PinkWins++;
+                    badge.style.background = '#FF4757';
+                    badge.style.color = 'white';
+                    badge.innerHTML = '🎉 胜负已定！💖 粉方四子连珠获胜！';
+                } else {
+                    c4BlueWins++;
+                    badge.style.background = '#2E86DE';
+                    badge.style.color = 'white';
+                    badge.innerHTML = '🎉 胜负已定！💙 蓝方四子连珠获胜！';
+                }
+                document.getElementById('c4PinkWins').innerText = c4PinkWins;
+                document.getElementById('c4BlueWins').innerText = c4BlueWins;
+                return;
+            }
+
+            // 检查平局
+            if (c4Grid.every(row => row.every(cell => cell !== null))) {
+                c4GameOver = true;
+                const badge = document.getElementById('c4TurnBadge');
+                badge.style.background = '#747D8C';
+                badge.style.color = 'white';
+                badge.innerHTML = '🤝 棋逢敌手！双方平局！';
+                return;
+            }
+
+            c4CurrentTurn = c4CurrentTurn === 'pink' ? 'blue' : 'pink';
+            updateC4TurnUI();
+        }
+
+        function checkC4Win(r, c, player) {
+            const directions = [
+                [[0, 1], [0, -1]],  // 水平
+                [[1, 0], [-1, 0]],  // 垂直
+                [[1, 1], [-1, -1]], // 正斜线
+                [[1, -1], [-1, 1]]  // 反斜线
+            ];
+
+            for (const dir of directions) {
+                let matches = [[r, c]];
+                for (const [dr, dc] of dir) {
+                    let cr = r + dr;
+                    let cc = c + dc;
+                    while (cr >= 0 && cr < C4_ROWS && cc >= 0 && cc < C4_COLS && c4Grid[cr][cc] === player) {
+                        matches.push([cr, cc]);
+                        cr += dr;
+                        cc += dc;
+                    }
+                }
+                if (matches.length >= 4) {
+                    return matches;
+                }
+            }
+            return null;
+        }
+
+        // ==========================================
+        // 8. 极速反应拍拍 (Reaction Duel)
+        // ==========================================
+        let reactionTimer = null;
+        let reactionStartTime = 0;
+        let reactionState = 'idle'; // 'idle', 'waiting', 'ready', 'ended'
+        let reactionGuestScoreVal = 0;
+        let reactionHostScoreVal = 0;
+
+        function startReactionRound() {
+            if (reactionTimer) clearTimeout(reactionTimer);
+            reactionState = 'waiting';
+
+            const midBar = document.getElementById('reactionMidBar');
+            const stateText = document.getElementById('reactionStateText');
+            const subText = document.getElementById('reactionSubText');
+            const guestZone = document.getElementById('reactionGuestZone');
+            const hostZone = document.getElementById('reactionHostZone');
+
+            midBar.classList.remove('ready', 'false-start');
+            guestZone.style.background = '#2B303A';
+            hostZone.style.background = '#2B303A';
+
+            stateText.innerText = '集中注意力...';
+            subText.innerText = '变绿瞬间拍击！抢跑会被判负';
+
+            const delay = 1800 + Math.random() * 2600;
+            reactionTimer = setTimeout(() => {
+                reactionState = 'ready';
+                reactionStartTime = performance.now();
+                midBar.classList.add('ready');
+                stateText.innerText = '⚡ 拍击！！！';
+                subText.innerText = '立刻拍下你的半屏！';
+            }, delay);
+        }
+
+        function handleReactionTap(who) {
+            if (reactionState === 'waiting') {
+                // 抢跑自爆
+                clearTimeout(reactionTimer);
+                reactionState = 'ended';
+                const midBar = document.getElementById('reactionMidBar');
+                const stateText = document.getElementById('reactionStateText');
+                const subText = document.getElementById('reactionSubText');
+                midBar.classList.add('false-start');
+
+                if (who === 'guest') {
+                    reactionHostScoreVal++;
+                    stateText.innerText = '❌ 蓝方抢跑违规！';
+                    subText.innerText = '💖 粉方自动获得 1 分！';
+                } else {
+                    reactionGuestScoreVal++;
+                    stateText.innerText = '❌ 粉方抢跑违规！';
+                    subText.innerText = '💙 蓝方自动获得 1 分！';
+                }
+                updateReactionScores();
+                return;
+            }
+
+            if (reactionState === 'ready') {
+                reactionState = 'ended';
+                const elapsed = Math.round(performance.now() - reactionStartTime);
+                const stateText = document.getElementById('reactionStateText');
+                const subText = document.getElementById('reactionSubText');
+
+                if (who === 'guest') {
+                    reactionGuestScoreVal++;
+                    stateText.innerText = `💙 蓝方获胜！耗时 ${elapsed}ms`;
+                    subText.innerText = '神级反应速度！点击右上角继续下一局';
+                    document.getElementById('reactionGuestZone').style.background = '#2E86DE';
+                } else {
+                    reactionHostScoreVal++;
+                    stateText.innerText = `💖 粉方获胜！耗时 ${elapsed}ms`;
+                    subText.innerText = '神级反应速度！点击右上角继续下一局';
+                    document.getElementById('reactionHostZone').style.background = '#FF4757';
+                }
+                updateReactionScores();
+            }
+        }
+
+        function updateReactionScores() {
+            document.getElementById('reactionGuestScore').innerText = `得分: ${reactionGuestScoreVal}`;
+            document.getElementById('reactionHostScore').innerText = `得分: ${reactionHostScoreVal}`;
+        }
+
+        // ==========================================
+        // 9. 贪吃蛇情侣大乱斗 (Snake Duel)
+        // ==========================================
+        let snakeCanvas = document.getElementById('snakeCanvas');
+        let sCtx = null;
+        let snakeInterval = null;
+        const GRID_CELL = 16;
+        let gridCols = 20;
+        let gridRows = 30;
+
+        let snakeGuest = {
+            body: [],
+            dir: { x: 0, y: 1 }, // 向下
+            color: '#54A0FF',
+            headColor: '#2E86DE',
+            alive: true,
+            score: 0
+        };
+
+        let snakeHost = {
+            body: [],
+            dir: { x: 0, y: -1 }, // 向上
+            color: '#FF6B81',
+            headColor: '#FF4757',
+            alive: true,
+            score: 0
+        };
+
+        let snakeFoods = [];
+
+        function startSnakeGame() {
+            snakeCanvas = document.getElementById('snakeCanvas');
+            const wrap = snakeCanvas.parentElement;
+            snakeCanvas.width = wrap.clientWidth;
+            snakeCanvas.height = wrap.clientHeight - 130;
+            sCtx = snakeCanvas.getContext('2d');
+
+            gridCols = Math.floor(snakeCanvas.width / GRID_CELL);
+            gridRows = Math.floor(snakeCanvas.height / GRID_CELL);
+
+            // 蓝方初始在上方
+            snakeGuest.body = [
+                { x: Math.floor(gridCols * 0.3), y: 3 },
+                { x: Math.floor(gridCols * 0.3), y: 2 },
+                { x: Math.floor(gridCols * 0.3), y: 1 }
+            ];
+            snakeGuest.dir = { x: 0, y: 1 };
+            snakeGuest.alive = true;
+
+            // 粉方初始在下方
+            snakeHost.body = [
+                { x: Math.floor(gridCols * 0.7), y: gridRows - 4 },
+                { x: Math.floor(gridCols * 0.7), y: gridRows - 3 },
+                { x: Math.floor(gridCols * 0.7), y: gridRows - 2 }
+            ];
+            snakeHost.dir = { x: 0, y: -1 };
+            snakeHost.alive = true;
+
+            snakeFoods = [];
+            spawnSnakeFood();
+            spawnSnakeFood();
+
+            document.getElementById('snakeStatusBanner').innerText = '抢夺爱心 · 避免撞击对方与边界';
+            document.getElementById('snakeGuestScore').innerText = snakeGuest.score;
+            document.getElementById('snakeHostScore').innerText = snakeHost.score;
+
+            if (snakeInterval) clearInterval(snakeInterval);
+            snakeInterval = setInterval(updateSnakeGame, 110);
+        }
+
+        function spawnSnakeFood() {
+            for (let attempts = 0; attempts < 100; attempts++) {
+                const fx = Math.floor(Math.random() * gridCols);
+                const fy = Math.floor(Math.random() * gridRows);
+                const inGuest = snakeGuest.body.some(b => b.x === fx && b.y === fy);
+                const inHost = snakeHost.body.some(b => b.x === fx && b.y === fy);
+                const inFood = snakeFoods.some(f => f.x === fx && f.y === fy);
+                if (!inGuest && !inHost && !inFood) {
+                    snakeFoods.push({ x: fx, y: fy, emoji: Math.random() > 0.4 ? '💖' : '🍎' });
+                    break;
+                }
+            }
+        }
+
+        function handleSnakeTurn(who, turnType) {
+            const s = who === 'guest' ? snakeGuest : snakeHost;
+            if (!s.alive) return;
+            const cur = s.dir;
+            // left: 逆时针转90度 (x,y) -> (y, -x)
+            // right: 顺时针转90度 (x,y) -> (-y, x)
+            if (turnType === 'left') {
+                s.dir = { x: cur.y, y: -cur.x };
+            } else if (turnType === 'right') {
+                s.dir = { x: -cur.y, y: cur.x };
+            }
+        }
+
+        function updateSnakeGame() {
+            if (!snakeGuest.alive || !snakeHost.alive) return;
+
+            // 移动头部
+            const newGuestHead = {
+                x: snakeGuest.body[0].x + snakeGuest.dir.x,
+                y: snakeGuest.body[0].y + snakeGuest.dir.y
+            };
+            const newHostHead = {
+                x: snakeHost.body[0].x + snakeHost.dir.x,
+                y: snakeHost.body[0].y + snakeHost.dir.y
+            };
+
+            // 蓝蛇死亡判定
+            let guestDied = false;
+            if (newGuestHead.x < 0 || newGuestHead.x >= gridCols || newGuestHead.y < 0 || newGuestHead.y >= gridRows) guestDied = true;
+            if (snakeGuest.body.some(b => b.x === newGuestHead.x && b.y === newGuestHead.y)) guestDied = true;
+            if (snakeHost.body.some(b => b.x === newGuestHead.x && b.y === newGuestHead.y)) guestDied = true;
+
+            // 粉蛇死亡判定
+            let hostDied = false;
+            if (newHostHead.x < 0 || newHostHead.x >= gridCols || newHostHead.y < 0 || newHostHead.y >= gridRows) hostDied = true;
+            if (snakeHost.body.some(b => b.x === newHostHead.x && b.y === newHostHead.y)) hostDied = true;
+            if (snakeGuest.body.some(b => b.x === newHostHead.x && b.y === newHostHead.y)) hostDied = true;
+
+            if (guestDied && hostDied) {
+                snakeGuest.alive = false;
+                snakeHost.alive = false;
+                clearInterval(snakeInterval);
+                document.getElementById('snakeStatusBanner').innerText = '💥 双方同时撞毁！平局！';
+                return;
+            } else if (guestDied) {
+                snakeGuest.alive = false;
+                snakeHost.score++;
+                clearInterval(snakeInterval);
+                document.getElementById('snakeHostScore').innerText = snakeHost.score;
+                document.getElementById('snakeStatusBanner').innerText = '🎉 蓝蛇撞毁！💖 粉蛇获胜！';
+                return;
+            } else if (hostDied) {
+                snakeHost.alive = false;
+                snakeGuest.score++;
+                clearInterval(snakeInterval);
+                document.getElementById('snakeGuestScore').innerText = snakeGuest.score;
+                document.getElementById('snakeStatusBanner').innerText = '🎉 粉蛇撞毁！💙 蓝蛇获胜！';
+                return;
+            }
+
+            // 吃食物检测
+            snakeGuest.body.unshift(newGuestHead);
+            const gFoodIdx = snakeFoods.findIndex(f => f.x === newGuestHead.x && f.y === newGuestHead.y);
+            if (gFoodIdx !== -1) {
+                snakeFoods.splice(gFoodIdx, 1);
+                spawnSnakeFood();
+            } else {
+                snakeGuest.body.pop();
+            }
+
+            snakeHost.body.unshift(newHostHead);
+            const hFoodIdx = snakeFoods.findIndex(f => f.x === newHostHead.x && f.y === newHostHead.y);
+            if (hFoodIdx !== -1) {
+                snakeFoods.splice(hFoodIdx, 1);
+                spawnSnakeFood();
+            } else {
+                snakeHost.body.pop();
+            }
+
+            drawSnakes();
+        }
+
+        function drawSnakes() {
+            if (!sCtx) return;
+            const w = snakeCanvas.width;
+            const h = snakeCanvas.height;
+
+            sCtx.fillStyle = '#0E121A';
+            sCtx.fillRect(0, 0, w, h);
+
+            // 绘制网格背景
+            sCtx.strokeStyle = 'rgba(255,255,255,0.03)';
+            sCtx.lineWidth = 1;
+            for (let x = 0; x < w; x += GRID_CELL) {
+                sCtx.beginPath(); sCtx.moveTo(x, 0); sCtx.lineTo(x, h); sCtx.stroke();
+            }
+            for (let y = 0; y < h; y += GRID_CELL) {
+                sCtx.beginPath(); sCtx.moveTo(0, y); sCtx.lineTo(w, y); sCtx.stroke();
+            }
+
+            // 绘制食物
+            sCtx.font = `${GRID_CELL}px sans-serif`;
+            sCtx.textAlign = 'center';
+            sCtx.textBaseline = 'middle';
+            snakeFoods.forEach(f => {
+                sCtx.fillText(f.emoji, f.x * GRID_CELL + GRID_CELL / 2, f.y * GRID_CELL + GRID_CELL / 2);
+            });
+
+            // 绘制蓝蛇
+            snakeGuest.body.forEach((b, idx) => {
+                sCtx.fillStyle = idx === 0 ? snakeGuest.headColor : snakeGuest.color;
+                sCtx.beginPath();
+                sCtx.roundRect(b.x * GRID_CELL + 1, b.y * GRID_CELL + 1, GRID_CELL - 2, GRID_CELL - 2, 4);
+                sCtx.fill();
+            });
+
+            // 绘制粉蛇
+            snakeHost.body.forEach((b, idx) => {
+                sCtx.fillStyle = idx === 0 ? snakeHost.headColor : snakeHost.color;
+                sCtx.beginPath();
+                sCtx.roundRect(b.x * GRID_CELL + 1, b.y * GRID_CELL + 1, GRID_CELL - 2, GRID_CELL - 2, 4);
+                sCtx.fill();
+            });
+        }
+
+        // ==========================================
+        // 10. 全局双人按键监听 (桌面端支持)
+        // ==========================================
+        window.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            const tankScr = document.getElementById('screen-tank');
+            const reactScr = document.getElementById('screen-reaction');
+            const snakeScr = document.getElementById('screen-snake');
+
+            // 坦克按键
+            if (tankScr && tankScr.style.display !== 'none') {
+                if (key === 'w') tankInputs.guest.up = true;
+                if (key === 's') tankInputs.guest.down = true;
+                if (key === 'a') tankInputs.guest.left = true;
+                if (key === 'd') tankInputs.guest.right = true;
+                if (key === 'f') fireBullet('guest');
+
+                if (e.key === 'ArrowUp') tankInputs.host.up = true;
+                if (e.key === 'ArrowDown') tankInputs.host.down = true;
+                if (e.key === 'ArrowLeft') tankInputs.host.left = true;
+                if (e.key === 'ArrowRight') tankInputs.host.right = true;
+                if (e.key === 'Enter') fireBullet('host');
+            }
+
+            // 反应拍拍按键
+            if (reactScr && reactScr.style.display !== 'none') {
+                if (key === 'w' || key === 'a') handleReactionTap('guest');
+                if (e.key === ' ' || e.key === 'Enter') handleReactionTap('host');
+            }
+
+            // 贪吃蛇转弯按键
+            if (snakeScr && snakeScr.style.display !== 'none') {
+                if (key === 'a') handleSnakeTurn('guest', 'left');
+                if (key === 'd') handleSnakeTurn('guest', 'right');
+                if (e.key === 'ArrowLeft') handleSnakeTurn('host', 'left');
+                if (e.key === 'ArrowRight') handleSnakeTurn('host', 'right');
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            const key = e.key.toLowerCase();
+            if (key === 'w') tankInputs.guest.up = false;
+            if (key === 's') tankInputs.guest.down = false;
+            if (key === 'a') tankInputs.guest.left = false;
+            if (key === 'd') tankInputs.guest.right = false;
+
+            if (e.key === 'ArrowUp') tankInputs.host.up = false;
+            if (e.key === 'ArrowDown') tankInputs.host.down = false;
+            if (e.key === 'ArrowLeft') tankInputs.host.left = false;
+            if (e.key === 'ArrowRight') tankInputs.host.right = false;
+        });
+
+        // ==========================================
+        // 游戏 8: 国球乒乓大决战 (Ping Pong)
+        // ==========================================
+        let pingpongAnimId = null;
+        let pingpongRunning = false;
+        let ppRally = 0;
+        let ppScoreGuest = 0; // 上方 蓝方
+        let ppScoreHost = 0;  // 下方 粉方
+
+        const ppPaddleW = 90;
+        const ppPaddleH = 14;
+        let ppBall = { x: 0, y: 0, vx: 0, vy: 0, r: 9, speed: 6, maxSpeed: 16 };
+        let ppGuestPaddle = { x: 150, y: 40, targetX: 150, w: ppPaddleW, h: ppPaddleH };
+        let ppHostPaddle = { x: 150, y: 560, targetX: 150, w: ppPaddleW, h: ppPaddleH };
+
+        function initPingPongCanvas() {
+            const canvas = document.getElementById('pingpongCanvas');
+            if (!canvas) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            ppGuestPaddle.y = 45;
+            ppHostPaddle.y = canvas.height - 45 - ppPaddleH;
+            resetPingPongBall(1);
+        }
+
+        function resetPingPongBall(serveToHost = 1) {
+            const canvas = document.getElementById('pingpongCanvas');
+            if (!canvas) return;
+            ppBall.x = canvas.width / 2;
+            ppBall.y = canvas.height / 2;
+            ppBall.speed = 6.2;
+            const angle = (Math.random() * 0.6 - 0.3) * Math.PI;
+            ppBall.vx = Math.sin(angle) * ppBall.speed;
+            ppBall.vy = (serveToHost ? 1 : -1) * Math.cos(angle) * ppBall.speed;
+            ppRally = 0;
+            updatePPRallyText();
+        }
+
+        function updatePPRallyText() {
+            const el = document.getElementById('pingpongRally');
+            if (el) el.innerText = `连击回合: ${ppRally}`;
+        }
+
+        function resetPingPongGame() {
+            ppScoreGuest = 0;
+            ppScoreHost = 0;
+            resetPingPongBall(Math.random() > 0.5 ? 1 : 0);
+        }
+
+        function startPingPongEngine() {
+            initPingPongCanvas();
+            pingpongRunning = true;
+            setupPingPongControls();
+            loopPingPong();
+        }
+
+        function stopPingPongEngine() {
+            pingpongRunning = false;
+            if (pingpongAnimId) cancelAnimationFrame(pingpongAnimId);
+        }
+
+        function setupPingPongControls() {
+            const canvas = document.getElementById('pingpongCanvas');
+            if (!canvas || canvas.dataset.bound) return;
+            canvas.dataset.bound = "true";
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                for (let i = 0; i < e.touches.length; i++) {
+                    const t = e.touches[i];
+                    const cx = t.clientX - rect.left;
+                    const cy = t.clientY - rect.top;
+                    if (cy < canvas.height / 2) {
+                        ppGuestPaddle.targetX = cx - ppPaddleW / 2;
+                    } else {
+                        ppHostPaddle.targetX = cx - ppPaddleW / 2;
+                    }
+                }
+            }, { passive: false });
+
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                for (let i = 0; i < e.touches.length; i++) {
+                    const t = e.touches[i];
+                    const cx = t.clientX - rect.left;
+                    const cy = t.clientY - rect.top;
+                    if (cy < canvas.height / 2) {
+                        ppGuestPaddle.targetX = cx - ppPaddleW / 2;
+                    } else {
+                        ppHostPaddle.targetX = cx - ppPaddleW / 2;
+                    }
+                }
+            }, { passive: false });
+
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const cx = e.clientX - rect.left;
+                const cy = e.clientY - rect.top;
+                if (cy < canvas.height / 2) {
+                    ppGuestPaddle.targetX = cx - ppPaddleW / 2;
+                } else {
+                    ppHostPaddle.targetX = cx - ppPaddleW / 2;
+                }
+            });
+        }
+
+        function loopPingPong() {
+            if (!pingpongRunning) return;
+            updatePingPong();
+            renderPingPong();
+            pingpongAnimId = requestAnimationFrame(loopPingPong);
+        }
+
+        function updatePingPong() {
+            const canvas = document.getElementById('pingpongCanvas');
+            if (!canvas) return;
+
+            // 平滑移动球拍
+            ppGuestPaddle.x += (ppGuestPaddle.targetX - ppGuestPaddle.x) * 0.35;
+            ppHostPaddle.x += (ppHostPaddle.targetX - ppHostPaddle.x) * 0.35;
+
+            // 限制球拍边界
+            ppGuestPaddle.x = Math.max(10, Math.min(canvas.width - ppPaddleW - 10, ppGuestPaddle.x));
+            ppHostPaddle.x = Math.max(10, Math.min(canvas.width - ppPaddleW - 10, ppHostPaddle.x));
+
+            // 更新球坐标
+            ppBall.x += ppBall.vx;
+            ppBall.y += ppBall.vy;
+
+            // 左右侧边反弹
+            if (ppBall.x - ppBall.r <= 8) {
+                ppBall.x = 8 + ppBall.r;
+                ppBall.vx = -ppBall.vx;
+                triggerAudio('tap');
+            } else if (ppBall.x + ppBall.r >= canvas.width - 8) {
+                ppBall.x = canvas.width - 8 - ppBall.r;
+                ppBall.vx = -ppBall.vx;
+                triggerAudio('tap');
+            }
+
+            // 碰撞检测: 蓝方球拍 (上方)
+            if (ppBall.vy < 0 &&
+                ppBall.y - ppBall.r <= ppGuestPaddle.y + ppGuestPaddle.h &&
+                ppBall.y + ppBall.r >= ppGuestPaddle.y &&
+                ppBall.x >= ppGuestPaddle.x - 4 &&
+                ppBall.x <= ppGuestPaddle.x + ppPaddleW + 4) {
+
+                const hitOffset = (ppBall.x - (ppGuestPaddle.x + ppPaddleW / 2)) / (ppPaddleW / 2);
+                ppBall.speed = Math.min(ppBall.maxSpeed, ppBall.speed + 0.35);
+                const angle = hitOffset * (Math.PI / 3.2); // 最大 56度
+                ppBall.vx = Math.sin(angle) * ppBall.speed;
+                ppBall.vy = Math.cos(angle) * ppBall.speed;
+                ppBall.y = ppGuestPaddle.y + ppGuestPaddle.h + ppBall.r + 1;
+                ppRally++;
+                updatePPRallyText();
+                triggerAudio('shoot');
+            }
+
+            // 碰撞检测: 粉方球拍 (下方)
+            if (ppBall.vy > 0 &&
+                ppBall.y + ppBall.r >= ppHostPaddle.y &&
+                ppBall.y - ppBall.r <= ppHostPaddle.y + ppHostPaddle.h &&
+                ppBall.x >= ppHostPaddle.x - 4 &&
+                ppBall.x <= ppHostPaddle.x + ppPaddleW + 4) {
+
+                const hitOffset = (ppBall.x - (ppHostPaddle.x + ppPaddleW / 2)) / (ppPaddleW / 2);
+                ppBall.speed = Math.min(ppBall.maxSpeed, ppBall.speed + 0.35);
+                const angle = hitOffset * (Math.PI / 3.2);
+                ppBall.vx = Math.sin(angle) * ppBall.speed;
+                ppBall.vy = -Math.cos(angle) * ppBall.speed;
+                ppBall.y = ppHostPaddle.y - ppBall.r - 1;
+                ppRally++;
+                updatePPRallyText();
+                triggerAudio('shoot');
+            }
+
+            // 出底线得分判定
+            if (ppBall.y + ppBall.r < 0) {
+                // 粉方得分
+                ppScoreHost++;
+                triggerAudio('win');
+                triggerFloatingHeart('screen-pingpong');
+                if (ppScoreHost >= 5) {
+                    alert(`🎉 恭喜粉方以 ${ppScoreHost}:${ppScoreGuest} 夺得乒乓大师赛胜利！`);
+                    resetPingPongGame();
+                } else {
+                    resetPingPongBall(0);
+                }
+            } else if (ppBall.y - ppBall.r > canvas.height) {
+                // 蓝方得分
+                ppScoreGuest++;
+                triggerAudio('win');
+                triggerFloatingHeart('screen-pingpong');
+                if (ppScoreGuest >= 5) {
+                    alert(`🎉 恭喜蓝方以 ${ppScoreGuest}:${ppScoreHost} 夺得乒乓大师赛胜利！`);
+                    resetPingPongGame();
+                } else {
+                    resetPingPongBall(1);
+                }
+            }
+        }
+
+        function renderPingPong() {
+            const canvas = document.getElementById('pingpongCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // 绘制经典蓝绿专业球台
+            ctx.fillStyle = '#0F3854';
+            ctx.fillRect(0, 0, w, h);
+
+            // 白色球台边框与端线
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(8, 8, w - 16, h - 16);
+
+            // 球台中线 (虚线)
+            ctx.beginPath();
+            ctx.setLineDash([8, 8]);
+            ctx.moveTo(w / 2, 8);
+            ctx.lineTo(w / 2, h - 8);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 中央白色球网
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(4, h / 2 - 3, w - 8, 6);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillRect(4, h / 2 - 12, w - 8, 24);
+
+            // 比分展示
+            ctx.font = '800 36px -apple-system, sans-serif';
+            ctx.fillStyle = 'rgba(100, 200, 255, 0.25)';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${ppScoreGuest}`, w / 2, h / 2 - 40);
+            ctx.fillStyle = 'rgba(255, 107, 139, 0.25)';
+            ctx.fillText(`${ppScoreHost}`, w / 2, h / 2 + 70);
+
+            // 蓝方球拍 (上方)
+            const gGrad = ctx.createLinearGradient(ppGuestPaddle.x, 0, ppGuestPaddle.x + ppPaddleW, 0);
+            gGrad.addColorStop(0, '#00B4DB');
+            gGrad.addColorStop(1, '#0083B0');
+            ctx.fillStyle = gGrad;
+            ctx.beginPath();
+            ctx.roundRect(ppGuestPaddle.x, ppGuestPaddle.y, ppPaddleW, ppPaddleH, 7);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // 粉方球拍 (下方)
+            const hGrad = ctx.createLinearGradient(ppHostPaddle.x, 0, ppHostPaddle.x + ppPaddleW, 0);
+            hGrad.addColorStop(0, '#FF4B72');
+            hGrad.addColorStop(1, '#FF758C');
+            ctx.fillStyle = hGrad;
+            ctx.beginPath();
+            ctx.roundRect(ppHostPaddle.x, ppHostPaddle.y, ppPaddleW, ppPaddleH, 7);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // 乒乓球本体与发光拖尾
+            ctx.save();
+            ctx.shadowColor = '#FFFA65';
+            ctx.shadowBlur = 12;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(ppBall.x, ppBall.y, ppBall.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // ==========================================
+        // 游戏 9: 草地双人网球 (Grand Slam Tennis)
+        // ==========================================
+        let tennisAnimId = null;
+        let tennisRunning = false;
+        let tnRally = 0;
+        let tnScoreGuest = 0;
+        let tnScoreHost = 0;
+
+        const tnRacketW = 86;
+        const tnRacketH = 16;
+        let tnBall = { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, r: 10, speed: 6.5, maxSpeed: 17 };
+        let tnGuest = { x: 150, y: 55, targetX: 150 };
+        let tnHost = { x: 150, y: 540, targetX: 150 };
+
+        function initTennisCanvas() {
+            const canvas = document.getElementById('tennisCanvas');
+            if (!canvas) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            tnGuest.y = 55;
+            tnHost.y = canvas.height - 55 - tnRacketH;
+            resetTennisBall(1);
+        }
+
+        function resetTennisBall(serveToHost = 1) {
+            const canvas = document.getElementById('tennisCanvas');
+            if (!canvas) return;
+            tnBall.x = canvas.width / 2;
+            tnBall.y = canvas.height / 2;
+            tnBall.speed = 6.8;
+            const angle = (Math.random() * 0.5 - 0.25) * Math.PI;
+            tnBall.vx = Math.sin(angle) * tnBall.speed;
+            tnBall.vy = (serveToHost ? 1 : -1) * Math.cos(angle) * tnBall.speed;
+            tnRally = 0;
+            updateTennisRallyText();
+        }
+
+        function updateTennisRallyText() {
+            const el = document.getElementById('tennisRally');
+            if (el) el.innerText = `大满贯回合: ${tnRally}`;
+        }
+
+        function resetTennisGame() {
+            tnScoreGuest = 0;
+            tnScoreHost = 0;
+            resetTennisBall(Math.random() > 0.5 ? 1 : 0);
+        }
+
+        function startTennisEngine() {
+            initTennisCanvas();
+            tennisRunning = true;
+            setupTennisControls();
+            loopTennis();
+        }
+
+        function stopTennisEngine() {
+            tennisRunning = false;
+            if (tennisAnimId) cancelAnimationFrame(tennisAnimId);
+        }
+
+        function setupTennisControls() {
+            const canvas = document.getElementById('tennisCanvas');
+            if (!canvas || canvas.dataset.bound) return;
+            canvas.dataset.bound = "true";
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                for (let i = 0; i < e.touches.length; i++) {
+                    const t = e.touches[i];
+                    const cx = t.clientX - rect.left;
+                    const cy = t.clientY - rect.top;
+                    if (cy < canvas.height / 2) {
+                        tnGuest.targetX = cx - tnRacketW / 2;
+                    } else {
+                        tnHost.targetX = cx - tnRacketW / 2;
+                    }
+                }
+            }, { passive: false });
+
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                for (let i = 0; i < e.touches.length; i++) {
+                    const t = e.touches[i];
+                    const cx = t.clientX - rect.left;
+                    const cy = t.clientY - rect.top;
+                    if (cy < canvas.height / 2) {
+                        tnGuest.targetX = cx - tnRacketW / 2;
+                    } else {
+                        tnHost.targetX = cx - tnRacketW / 2;
+                    }
+                }
+            }, { passive: false });
+
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const cx = e.clientX - rect.left;
+                const cy = e.clientY - rect.top;
+                if (cy < canvas.height / 2) {
+                    tnGuest.targetX = cx - tnRacketW / 2;
+                } else {
+                    tnHost.targetX = cx - tnRacketW / 2;
+                }
+            });
+        }
+
+        function loopTennis() {
+            if (!tennisRunning) return;
+            updateTennis();
+            renderTennis();
+            tennisAnimId = requestAnimationFrame(loopTennis);
+        }
+
+        function updateTennis() {
+            const canvas = document.getElementById('tennisCanvas');
+            if (!canvas) return;
+
+            tnGuest.x += (tnGuest.targetX - tnGuest.x) * 0.35;
+            tnHost.x += (tnHost.targetX - tnHost.x) * 0.35;
+
+            tnGuest.x = Math.max(12, Math.min(canvas.width - tnRacketW - 12, tnGuest.x));
+            tnHost.x = Math.max(12, Math.min(canvas.width - tnRacketW - 12, tnHost.x));
+
+            tnBall.x += tnBall.vx;
+            tnBall.y += tnBall.vy;
+
+            // 左右双打边界反弹
+            if (tnBall.x - tnBall.r <= 12) {
+                tnBall.x = 12 + tnBall.r;
+                tnBall.vx = -tnBall.vx;
+                triggerAudio('tap');
+            } else if (tnBall.x + tnBall.r >= canvas.width - 12) {
+                tnBall.x = canvas.width - 12 - tnBall.r;
+                tnBall.vx = -tnBall.vx;
+                triggerAudio('tap');
+            }
+
+            // 击球: 蓝方网球拍 (上方)
+            if (tnBall.vy < 0 &&
+                tnBall.y - tnBall.r <= tnGuest.y + tnRacketH &&
+                tnBall.y + tnBall.r >= tnGuest.y &&
+                tnBall.x >= tnGuest.x - 6 &&
+                tnBall.x <= tnGuest.x + tnRacketW + 6) {
+
+                const hitOffset = (tnBall.x - (tnGuest.x + tnRacketW / 2)) / (tnRacketW / 2);
+                tnBall.speed = Math.min(tnBall.maxSpeed, tnBall.speed + 0.4);
+                const angle = hitOffset * (Math.PI / 3.1);
+                tnBall.vx = Math.sin(angle) * tnBall.speed;
+                tnBall.vy = Math.cos(angle) * tnBall.speed;
+                tnBall.y = tnGuest.y + tnRacketH + tnBall.r + 1;
+                tnRally++;
+                updateTennisRallyText();
+                triggerAudio('shoot');
+            }
+
+            // 击球: 粉方网球拍 (下方)
+            if (tnBall.vy > 0 &&
+                tnBall.y + tnBall.r >= tnHost.y &&
+                tnBall.y - tnBall.r <= tnHost.y + tnRacketH &&
+                tnBall.x >= tnHost.x - 6 &&
+                tnBall.x <= tnHost.x + tnRacketW + 6) {
+
+                const hitOffset = (tnBall.x - (tnHost.x + tnRacketW / 2)) / (tnRacketW / 2);
+                tnBall.speed = Math.min(tnBall.maxSpeed, tnBall.speed + 0.4);
+                const angle = hitOffset * (Math.PI / 3.1);
+                tnBall.vx = Math.sin(angle) * tnBall.speed;
+                tnBall.vy = -Math.cos(angle) * tnBall.speed;
+                tnBall.y = tnHost.y - tnBall.r - 1;
+                tnRally++;
+                updateTennisRallyText();
+                triggerAudio('shoot');
+            }
+
+            // 底线得分
+            if (tnBall.y + tnBall.r < 0) {
+                tnScoreHost++;
+                triggerAudio('win');
+                triggerFloatingHeart('screen-tennis');
+                if (tnScoreHost >= 5) {
+                    alert(`🏆 粉方斩获温网大满贯冠军！总比分 ${tnScoreHost}:${tnScoreGuest}`);
+                    resetTennisGame();
+                } else {
+                    resetTennisBall(0);
+                }
+            } else if (tnBall.y - tnBall.r > canvas.height) {
+                tnScoreGuest++;
+                triggerAudio('win');
+                triggerFloatingHeart('screen-tennis');
+                if (tnScoreGuest >= 5) {
+                    alert(`🏆 蓝方斩获温网大满贯冠军！总比分 ${tnScoreGuest}:${tnScoreHost}`);
+                    resetTennisGame();
+                } else {
+                    resetTennisBall(1);
+                }
+            }
+        }
+
+        function renderTennis() {
+            const canvas = document.getElementById('tennisCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // 绘制温网经典草地球场
+            ctx.fillStyle = '#1D5A2E';
+            ctx.fillRect(0, 0, w, h);
+
+            // 白色网球单打与双打边线
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.lineWidth = 3.5;
+            ctx.strokeRect(18, 14, w - 36, h - 28);
+
+            // 发球线与发球区中线
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 2;
+            const netY = h / 2;
+            const serveH = (h - 28) * 0.28;
+            ctx.strokeRect(18, netY - serveH, w - 36, serveH * 2);
+            ctx.beginPath();
+            ctx.moveTo(w / 2, netY - serveH);
+            ctx.lineTo(w / 2, netY + serveH);
+            ctx.stroke();
+
+            // 中央立体网球网 (Net)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.fillRect(10, netY - 3, w - 20, 6);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(10, netY + 3, w - 20, 4);
+
+            // 比分展示
+            ctx.font = '900 38px -apple-system, sans-serif';
+            ctx.fillStyle = 'rgba(120, 220, 255, 0.28)';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${tnScoreGuest}`, w / 2, netY - 50);
+            ctx.fillStyle = 'rgba(255, 120, 160, 0.28)';
+            ctx.fillText(`${tnScoreHost}`, w / 2, netY + 80);
+
+            // 蓝方网球拍
+            ctx.fillStyle = '#00C9FF';
+            ctx.beginPath();
+            ctx.roundRect(tnGuest.x, tnGuest.y, tnRacketW, tnRacketH, 8);
+            ctx.fill();
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 粉方网球拍
+            ctx.fillStyle = '#FF416C';
+            ctx.beginPath();
+            ctx.roundRect(tnHost.x, tnHost.y, tnRacketW, tnRacketH, 8);
+            ctx.fill();
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 黄绿色毛毡网球
+            ctx.save();
+            ctx.shadowColor = '#CCFF00';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = '#D4FF00';
+            ctx.beginPath();
+            ctx.arc(tnBall.x, tnBall.y, tnBall.r, 0, Math.PI * 2);
+            ctx.fill();
+            // 网球标志性白色缝线
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(tnBall.x - 3, tnBall.y, tnBall.r - 2, -Math.PI / 2, Math.PI / 2);
+            ctx.stroke();
+            ctx.restore();
         }
     </script>
 </body>
