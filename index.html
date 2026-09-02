@@ -6,14 +6,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="情侣游戏盒">
-    <title>情侣双人游戏盒 (Couple Game Hub)</title>
+    <title>情侣双人游戏盒 (Couple Games Hub)</title>
     <style>
         :root {
             --pink-main: #FF6B8B;
             --pink-soft: #FFA8BA;
             --blue-main: #6C92F4;
             --blue-soft: #A3BCF9;
-            --bg-light: #FFF8F9;
             --text-dark: #2C2C2E;
             --text-muted: #8E8E93;
         }
@@ -24,56 +23,44 @@
             -webkit-user-select: none;
             margin: 0;
             padding: 0;
-            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #FFE5EC 0%, #F0F4FF 100%);
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* 响应式容器：移动端自动全屏沉浸，桌面端呈现精美手机外壳 */
-        .phone-container {
+        html, body {
             width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #15161E;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* 移动端全屏铺满，桌面端展示模拟手机 */
+        .app-viewport {
+            width: 100vw;
+            height: 100dvh;
             height: 100vh;
-            height: -webkit-fill-available;
             background: #ffffff;
             position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            margin: 0 auto;
         }
 
         @media (min-width: 500px) {
-            .phone-container {
+            body {
+                background: linear-gradient(135deg, #FFE5EC 0%, #F0F4FF 100%);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .app-viewport {
                 width: 390px;
                 height: 800px;
-                border-radius: 48px;
-                box-shadow: 0 25px 60px rgba(255, 107, 139, 0.25), 0 10px 25px rgba(0, 0, 0, 0.08);
-                border: 10px solid #2C2C2E;
+                border-radius: 44px;
+                box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+                border: 8px solid #2C2C2E;
             }
-            .phone-island {
-                display: block;
-            }
-        }
-
-        .phone-island {
-            width: 120px;
-            height: 28px;
-            background: #2C2C2E;
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 20px;
-            z-index: 100;
-            display: none;
         }
 
         /* 大厅界面 */
@@ -82,19 +69,20 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: calc(env(safe-area-inset-top, 20px) + 24px) 20px calc(env(safe-area-inset-bottom, 20px) + 16px);
             background: linear-gradient(180deg, #FFF0F4 0%, #FFFFFF 35%, #F8FAFF 100%);
-            z-index: 10;
+            padding: calc(env(safe-area-inset-top, 20px) + 12px) 18px calc(env(safe-area-inset-bottom, 20px) + 12px);
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            z-index: 10;
         }
 
         .header {
             text-align: center;
-            margin-top: 10px;
+            margin-bottom: 12px;
         }
 
         .header-title {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 900;
             color: var(--text-dark);
             display: flex;
@@ -109,16 +97,17 @@
             margin-top: 4px;
         }
 
-        .connection-bar {
-            margin-top: 16px;
-            background: rgba(255, 255, 255, 0.92);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            border-radius: 16px;
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
+        .status-badge {
+            display: inline-flex;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            gap: 6px;
+            background: rgba(255, 107, 139, 0.1);
+            color: var(--pink-main);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 8px;
         }
 
         .status-dot {
@@ -126,87 +115,71 @@
             height: 8px;
             border-radius: 50%;
             background: #34C759;
-            display: inline-block;
-            margin-right: 6px;
+            box-shadow: 0 0 8px #34C759;
         }
 
-        .match-btn {
-            background: linear-gradient(135deg, var(--pink-main), #FF8E53);
-            color: white;
-            border: none;
-            padding: 7px 14px;
-            border-radius: 14px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* 分类标签栏 */
+        /* 分类切换 */
         .category-scroll {
             display: flex;
             gap: 8px;
-            margin-top: 18px;
             overflow-x: auto;
-            padding-bottom: 4px;
+            padding: 8px 0 12px;
+            scrollbar-width: none;
         }
+        .category-scroll::-webkit-scrollbar { display: none; }
 
         .category-chip {
+            flex-shrink: 0;
             padding: 7px 14px;
-            background: white;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
+            background: #F2F2F7;
+            border-radius: 18px;
+            font-size: 13px;
+            font-weight: 600;
             color: var(--text-muted);
-            border: 1px solid rgba(0,0,0,0.06);
-            white-space: nowrap;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
         .category-chip.active {
             background: var(--pink-main);
-            color: white;
-            border-color: var(--pink-main);
-            box-shadow: 0 4px 10px rgba(255, 107, 139, 0.3);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(255, 107, 139, 0.3);
         }
 
-        /* 游戏列表容器 */
+        /* 游戏列表卡片 */
         .game-list {
-            margin-top: 14px;
             display: flex;
             flex-direction: column;
             gap: 12px;
             padding-bottom: 20px;
         }
 
-        .game-item-card {
-            background: white;
+        .game-card {
+            background: #ffffff;
             border-radius: 20px;
             padding: 16px;
             display: flex;
             align-items: center;
             gap: 14px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.04);
             cursor: pointer;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.02);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            touch-action: manipulation;
+            transition: transform 0.15s ease;
+        }
+        .game-card:active {
+            transform: scale(0.98);
         }
 
-        .game-item-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .game-icon-box {
-            width: 54px;
-            height: 54px;
+        .game-icon {
+            width: 52px;
+            height: 52px;
             border-radius: 16px;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             font-size: 26px;
-            color: white;
             flex-shrink: 0;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
         }
 
         .game-info {
@@ -225,13 +198,13 @@
             color: var(--text-dark);
         }
 
-        .new-badge {
-            background: var(--pink-main);
-            color: white;
-            font-size: 9px;
-            font-weight: 900;
+        .badge-hot {
+            font-size: 10px;
+            font-weight: 800;
+            color: #FF3B30;
+            background: #FFE5E5;
             padding: 2px 6px;
-            border-radius: 8px;
+            border-radius: 6px;
         }
 
         .game-desc {
@@ -241,34 +214,48 @@
             line-height: 1.3;
         }
 
-        .enter-arrow {
-            color: #C7C7CC;
-            font-weight: bold;
-            font-size: 16px;
+        .enter-btn {
+            background: #F2F2F7;
+            color: var(--pink-main);
+            font-weight: 800;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
         }
 
-        /* 游戏界面通用外框 */
-        .subgame-container {
+        /* 统一子游戏容器 */
+        .game-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             display: none;
-            position: relative;
-            background: white;
+            z-index: 50;
+            background: #ffffff;
+            touch-action: none;
         }
 
-        /* 游戏 1：心动轨道 (物理对战) */
-        #game-orbit {
-            background: radial-gradient(circle at center, #262938 0%, #15161E 100%);
+        /* ================= 游戏 1：心动轨道 ================= */
+        #screen-orbit {
+            background: radial-gradient(circle at center, #232736 0%, #12131A 100%);
         }
 
-        canvas {
+        #orbitCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             display: block;
             touch-action: none;
         }
 
-        .orbit-hud {
+        .orbit-ui-layer {
             position: absolute;
             top: 0;
             left: 0;
@@ -278,391 +265,339 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: calc(env(safe-area-inset-top, 20px) + 16px) 18px calc(env(safe-area-inset-bottom, 20px) + 16px);
+            padding: calc(env(safe-area-inset-top, 20px) + 12px) 16px calc(env(safe-area-inset-bottom, 20px) + 12px);
         }
 
-        .hud-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .ui-interactive {
             pointer-events: auto;
         }
 
-        .nav-back-btn {
-            background: rgba(255, 255, 255, 0.18);
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.22);
             backdrop-filter: blur(10px);
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 7px 15px;
-            border-radius: 14px;
+            padding: 8px 16px;
+            border-radius: 16px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
+            touch-action: manipulation;
         }
 
-        .orbit-score {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: rgba(255, 255, 255, 0.12);
+        .glass-btn:active {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .score-pill {
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(12px);
+            border-radius: 20px;
             padding: 6px 16px;
-            border-radius: 18px;
             color: white;
             font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* 游戏 2：默契共振 (心理问答) */
-        #game-syncmind {
-            background: linear-gradient(180deg, #FFF0F4 0%, #FFFFFF 50%, #F5F7FF 100%);
-            padding: calc(env(safe-area-inset-top, 20px) + 20px) 20px calc(env(safe-area-inset-bottom, 20px) + 20px);
+        .touch-zone-hint {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            pointer-events: none;
+        }
+        .hint-guest { top: 30%; color: rgba(163, 188, 249, 0.7); }
+        .hint-host { bottom: 30%; color: rgba(255, 168, 186, 0.7); }
+
+        /* ================= 游戏 2：默契共振 ================= */
+        #screen-syncmind {
+            background: linear-gradient(180deg, #FFF0F4 0%, #FFFFFF 45%, #F4F7FF 100%);
+            padding: calc(env(safe-area-inset-top, 20px) + 16px) 18px calc(env(safe-area-inset-bottom, 20px) + 16px);
+            display: none;
             flex-direction: column;
             overflow-y: auto;
+            touch-action: pan-y;
         }
 
-        .question-card {
-            background: white;
-            border-radius: 22px;
-            padding: 24px 18px;
-            box-shadow: 0 8px 22px rgba(255, 107, 139, 0.12);
+        .sync-q-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px 20px;
+            box-shadow: 0 10px 24px rgba(255, 107, 139, 0.12);
             text-align: center;
-            margin-top: 18px;
+            margin: 18px 0;
             border: 1px solid rgba(255, 107, 139, 0.15);
         }
 
-        .q-tag {
-            color: var(--pink-main);
-            font-size: 12px;
-            font-weight: 700;
+        .sync-opt-btn {
+            background: #ffffff;
+            border: 2px solid #EBEBF0;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            touch-action: manipulation;
         }
 
-        .q-text {
-            font-size: 20px;
+        .sync-opt-text {
+            font-size: 15px;
             font-weight: 800;
             color: var(--text-dark);
-            margin-top: 8px;
-            line-height: 1.4;
+            text-align: center;
         }
 
-        .option-group {
-            margin-top: 24px;
+        .sync-select-row {
             display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .option-btn {
-            background: white;
-            border: 2px solid #EFEFEF;
-            border-radius: 18px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .option-btn:hover {
-            border-color: var(--pink-soft);
-        }
-
-        .opt-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .selector-tags {
-            display: flex;
+            justify-content: center;
             gap: 12px;
         }
 
-        .tag-btn {
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 700;
+        .sync-player-btn {
+            padding: 8px 18px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            border: none;
             cursor: pointer;
-            border: 1px solid transparent;
+            touch-action: manipulation;
         }
+        .btn-pink { background: #FFE8ED; color: var(--pink-main); }
+        .btn-pink.active { background: var(--pink-main); color: white; box-shadow: 0 4px 10px rgba(255,107,139,0.4); }
 
-        .tag-pink {
-            background: #FFEBF0;
-            color: var(--pink-main);
-            border-color: var(--pink-soft);
-        }
-        .tag-pink.selected {
-            background: var(--pink-main);
-            color: white;
-        }
+        .btn-blue { background: #EAF0FF; color: var(--blue-main); }
+        .btn-blue.active { background: var(--blue-main); color: white; box-shadow: 0 4px 10px rgba(108,146,244,0.4); }
 
-        .tag-blue {
-            background: #EDF2FF;
-            color: var(--blue-main);
-            border-color: var(--blue-soft);
-        }
-        .tag-blue.selected {
-            background: var(--blue-main);
-            color: white;
-        }
-
-        .result-box {
-            margin-top: 18px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 18px;
-            padding: 16px;
+        .sync-result-panel {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 18px;
             text-align: center;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            margin-top: 10px;
             display: none;
         }
 
-        /* 游戏 3：心跳共振 (双人触碰/合奏) */
-        #game-touchheart {
-            background: #1C1C1E;
+        /* ================= 游戏 3：心跳共振 ================= */
+        #screen-touchheart {
+            background: #151518;
+            padding: calc(env(safe-area-inset-top, 20px) + 16px) 18px calc(env(safe-area-inset-bottom, 20px) + 16px);
+            display: none;
             flex-direction: column;
-            padding: calc(env(safe-area-inset-top, 20px) + 20px) 20px calc(env(safe-area-inset-bottom, 20px) + 20px);
             color: white;
             text-align: center;
+            touch-action: none;
         }
 
-        .touch-pad {
+        .pulse-pad {
             flex: 1;
-            margin: 20px 0;
-            background: radial-gradient(circle, #2C2C2E 0%, #151516 100%);
-            border-radius: 28px;
-            border: 2px dashed rgba(255, 107, 139, 0.3);
+            margin: 18px 0;
+            background: radial-gradient(circle, #25252A 0%, #101012 100%);
+            border-radius: 32px;
+            border: 2px dashed rgba(255, 107, 139, 0.4);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
             touch-action: none;
+            position: relative;
+            overflow: hidden;
         }
 
-        .big-pulse-heart {
-            font-size: 84px;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .touch-count-text {
-            font-size: 14px;
-            color: #8E8E93;
-            margin-top: 14px;
+        .pulse-heart-icon {
+            font-size: 90px;
+            transform-origin: center center;
+            will-change: transform;
+            pointer-events: none;
         }
 
         .floating-heart {
             position: absolute;
             pointer-events: none;
-            font-size: 28px;
-            animation: floatUp 1.3s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+            font-size: 32px;
+            animation: floatUp 1.2s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
         }
 
         @keyframes floatUp {
-            0% { opacity: 0; transform: translateY(0) scale(0.6); }
-            20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
-            100% { opacity: 0; transform: translateY(-140px) scale(1.6); }
+            0% { opacity: 0; transform: translateY(0) scale(0.5); }
+            20% { opacity: 1; transform: translateY(-30px) scale(1.3); }
+            100% { opacity: 0; transform: translateY(-160px) scale(1.6); }
         }
     </style>
 </head>
 <body>
 
-    <div class="phone-container">
-        <div class="phone-island"></div>
-
-        <!-- 页面 1：情侣游戏盒大厅 -->
+    <div class="app-viewport">
+        <!-- 大厅 -->
         <div id="lobby-view">
             <div class="header">
                 <div class="header-title">
                     <span>💖</span>
                     <span>情侣游戏盒</span>
                 </div>
-                <div class="header-subtitle">双人同屏 · 远程联机 · 甜蜜升温</div>
-            </div>
-
-            <!-- 联机状态条 -->
-            <div class="connection-bar">
-                <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">
-                    <span class="status-dot"></span>双人同屏 / 极速模式就绪
+                <div class="header-subtitle">单机同屏 · 随时随地甜蜜互动</div>
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span>双人同屏极速模式已就绪</span>
                 </div>
-                <button class="match-btn" onclick="alert('联机功能就绪！在真机上开启蓝牙/WiFi或输入4位码即可双人同步。')">4位房间码</button>
             </div>
 
-            <!-- 分类切换 -->
+            <!-- 分类 -->
             <div class="category-scroll">
-                <div class="category-chip active" onclick="filterCategory('all', this)">全部合集 (4)</div>
+                <div class="category-chip active" onclick="filterCategory('all', this)">全部小游戏</div>
                 <div class="category-chip" onclick="filterCategory('physical', this)">即时物理</div>
                 <div class="category-chip" onclick="filterCategory('tacit', this)">默契问答</div>
-                <div class="category-chip" onclick="filterCategory('coop', this)">双人互动</div>
+                <div class="category-chip" onclick="filterCategory('coop', this)">双人触碰</div>
             </div>
 
             <!-- 游戏卡片合集 -->
             <div class="game-list">
-                <!-- 游戏 1 -->
-                <div class="game-item-card" data-cat="physical" onclick="openGame('orbit')">
-                    <div class="game-icon-box" style="background: linear-gradient(135deg, #FF6B8B, #FF8E53);">
-                        ⚡
-                    </div>
+                <!-- 1. 心动轨道 -->
+                <div class="game-card" data-category="physical" onclick="launchGame('orbit')">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #FF6B8B, #FF8E53);">⚡</div>
                     <div class="game-info">
                         <div class="game-title-row">
-                            <span class="game-title">心动轨道</span>
-                            <span class="new-badge">HOT</span>
+                            <span class="game-title">心动轨道 (Gravity Orbit)</span>
+                            <span class="badge-hot">超高能</span>
                         </div>
-                        <div class="game-desc">指尖引力弹球 · 连击加速与边缘切线碰撞</div>
+                        <div class="game-desc">双人上下半区分屏滑动 · 5次连击激活心动加速</div>
                     </div>
-                    <div class="enter-arrow">›</div>
+                    <div class="enter-btn">›</div>
                 </div>
 
-                <!-- 游戏 2 -->
-                <div class="game-item-card" data-cat="tacit" onclick="openGame('syncmind')">
-                    <div class="game-icon-box" style="background: linear-gradient(135deg, #9B51E0, #E040FB);">
-                        💭
-                    </div>
+                <!-- 2. 默契共振 -->
+                <div class="game-card" data-category="tacit" onclick="launchGame('syncmind')">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #9B51E0, #E040FB);">💭</div>
                     <div class="game-info">
                         <div class="game-title-row">
-                            <span class="game-title">默契共振</span>
-                            <span class="new-badge">NEW</span>
+                            <span class="game-title">默契共振 (Sync Mind)</span>
+                            <span class="badge-hot" style="color:#9B51E0; background:#F4EBFF;">必玩</span>
                         </div>
-                        <div class="game-desc">灵魂二选一 · 背对背作答，分歧触发可爱惩罚</div>
+                        <div class="game-desc">背对背二选一 · 默契加分，意见不一触发甜蜜惩罚</div>
                     </div>
-                    <div class="enter-arrow">›</div>
+                    <div class="enter-btn">›</div>
                 </div>
 
-                <!-- 游戏 3 -->
-                <div class="game-item-card" data-cat="coop" onclick="openGame('touchheart')">
-                    <div class="game-icon-box" style="background: linear-gradient(135deg, #FF5252, #FF7A00);">
-                        ❤️
-                    </div>
+                <!-- 3. 心跳共振 -->
+                <div class="game-card" data-category="coop" onclick="launchGame('touchheart')">
+                    <div class="game-icon" style="background: linear-gradient(135deg, #FF5252, #FF7A00);">❤️</div>
                     <div class="game-info">
                         <div class="game-title-row">
-                            <span class="game-title">心跳共振</span>
+                            <span class="game-title">心跳共振 (Touch Heart)</span>
                         </div>
-                        <div class="game-desc">双手同时长按屏幕 · 感受心跳同频与粒子流光</div>
+                        <div class="game-desc">指尖长按屏幕 · 感受心跳同频加速与爱心喷发</div>
                     </div>
-                    <div class="enter-arrow">›</div>
-                </div>
-
-                <!-- 游戏 4 预告 -->
-                <div class="game-item-card" data-cat="coop" onclick="alert('同心天平平衡游戏正在接入中，即将在下一版本上线！')">
-                    <div class="game-icon-box" style="background: linear-gradient(135deg, #4E54C8, #8F94FB);">
-                        ⚖️
-                    </div>
-                    <div class="game-info">
-                        <div class="game-title-row">
-                            <span class="game-title">同心天平</span>
-                            <span style="font-size: 10px; color: #8E8E93;">即将上线</span>
-                        </div>
-                        <div class="game-desc">重力感应协同平衡 · 别让属于你们的爱心滑落</div>
-                    </div>
-                    <div class="enter-arrow">›</div>
+                    <div class="enter-btn">›</div>
                 </div>
             </div>
         </div>
 
-        <!-- 页面 2：心动轨道子游戏 -->
-        <div id="game-orbit" class="subgame-container">
-            <canvas id="gameCanvas"></canvas>
-            <div class="orbit-hud">
-                <div class="hud-row">
-                    <button class="nav-back-btn" onclick="backToLobby('game-orbit')">✕ 返回大厅</button>
-                    <div class="orbit-score">
-                        <span style="color: var(--blue-soft);">💙 <span id="guestScore">0</span></span>
-                        <span id="rallyText" style="color: #FFD166; font-size: 12px;">连击: 0</span>
-                        <span style="color: var(--pink-soft);"><span id="hostScore">0</span> 💖</span>
+        <!-- 游戏 1：心动轨道屏幕 -->
+        <div id="screen-orbit" class="game-screen">
+            <canvas id="orbitCanvas"></canvas>
+            <div class="touch-zone-hint hint-guest">【上方】蓝色方滑动区</div>
+            <div class="touch-zone-hint hint-host">【下方】粉色方滑动区</div>
+
+            <div class="orbit-ui-layer">
+                <div style="display:flex; justify-content:space-between; align-items:center;" class="ui-interactive">
+                    <button class="glass-btn" onclick="exitToLobby('screen-orbit')">✕ 退出</button>
+                    <div class="score-pill">
+                        <span style="color:var(--blue-soft);">💙 <span id="guestScoreVal">0</span></span>
+                        <span id="rallyLabel" style="color:#FFD166; font-size:12px;">连击: 0</span>
+                        <span style="color:var(--pink-soft);"><span id="hostScoreVal">0</span> 💖</span>
                     </div>
                 </div>
-                <div class="hud-row">
-                    <span style="font-size: 11px; color: rgba(255,255,255,0.7);">滑动上下半区分控挡板</span>
-                    <button class="nav-back-btn" onclick="spawnHeartEffect('game-orbit')">💌 发送爱心</button>
+
+                <div style="display:flex; justify-content:flex-end;" class="ui-interactive">
+                    <button class="glass-btn" onclick="triggerFloatingHeart('screen-orbit')">💌 投送爱心</button>
                 </div>
             </div>
         </div>
 
-        <!-- 页面 3：默契共振子游戏 -->
-        <div id="game-syncmind" class="subgame-container">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <button class="nav-back-btn" style="background: #E5E5EA; color: var(--text-dark);" onclick="backToLobby('game-syncmind')">✕ 退出</button>
-                <div style="font-size: 15px; font-weight: 800; color: var(--text-dark);">默契积分: <span id="syncScore" style="color: var(--pink-main);">0</span></div>
+        <!-- 游戏 2：默契共振屏幕 -->
+        <div id="screen-syncmind" class="game-screen">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <button class="glass-btn" style="background:#E5E5EA; color:#2C2C2E;" onclick="exitToLobby('screen-syncmind')">✕ 退出</button>
+                <div style="font-weight:800; font-size:16px; color:#2C2C2E;">默契得分: <span id="syncScoreNum" style="color:var(--pink-main);">0</span></div>
             </div>
 
-            <div class="question-card">
-                <div class="q-tag" id="qTag">QUESTION 1 / 4</div>
-                <div class="q-text" id="qPrompt">周末休息，更倾向于怎么过？</div>
+            <div class="sync-q-card">
+                <div style="font-size:12px; font-weight:800; color:var(--pink-main);" id="syncQIndexTag">QUESTION 1 / 4</div>
+                <div style="font-size:19px; font-weight:900; color:#2C2C2E; margin-top:8px;" id="syncQTitle">周末休息，更倾向于怎么过？</div>
             </div>
 
-            <div class="option-group">
-                <div class="option-btn">
-                    <span class="opt-title" id="optAText">🛋️ 窝在沙发看剧点外卖</span>
-                    <div class="selector-tags">
-                        <button class="tag-btn tag-pink" id="hostA" onclick="syncPick('A', true)">粉方选择</button>
-                        <button class="tag-btn tag-blue" id="guestA" onclick="syncPick('A', false)">蓝方选择</button>
-                    </div>
-                </div>
-
-                <div class="option-btn">
-                    <span class="opt-title" id="optBText">☕ 出门探店看展逛街</span>
-                    <div class="selector-tags">
-                        <button class="tag-btn tag-pink" id="hostB" onclick="syncPick('B', true)">粉方选择</button>
-                        <button class="tag-btn tag-blue" id="guestB" onclick="syncPick('B', false)">蓝方选择</button>
-                    </div>
+            <div class="sync-opt-btn">
+                <div class="sync-opt-text" id="syncOptA">🛋️ 窝在沙发看剧点外卖</div>
+                <div class="sync-select-row">
+                    <button class="sync-player-btn btn-pink" id="pinkBtnA" onclick="handleSyncPick('A', true)">粉方选择</button>
+                    <button class="sync-player-btn btn-blue" id="blueBtnA" onclick="handleSyncPick('A', false)">蓝方选择</button>
                 </div>
             </div>
 
-            <div class="result-box" id="resultBox">
-                <div id="resultStatus" style="font-size: 16px; font-weight: 800;"></div>
-                <div id="penaltyText" style="font-size: 13px; color: var(--pink-main); margin-top: 6px; font-weight: 600;"></div>
-                <button class="match-btn" style="margin-top: 12px; padding: 8px 22px;" onclick="nextSyncQuestion()">下一题 →</button>
+            <div class="sync-opt-btn">
+                <div class="sync-opt-text" id="syncOptB">☕ 出门探店看展逛街</div>
+                <div class="sync-select-row">
+                    <button class="sync-player-btn btn-pink" id="pinkBtnB" onclick="handleSyncPick('B', true)">粉方选择</button>
+                    <button class="sync-player-btn btn-blue" id="blueBtnB" onclick="handleSyncPick('B', false)">蓝方选择</button>
+                </div>
+            </div>
+
+            <div class="sync-result-panel" id="syncResultPanel">
+                <div id="syncResultTitle" style="font-size:16px; font-weight:800;"></div>
+                <div id="syncPenaltyText" style="font-size:13px; color:var(--pink-main); margin-top:6px; font-weight:700;"></div>
+                <button class="glass-btn ui-interactive" style="background:var(--pink-main); color:white; margin-top:14px; width:100%;" onclick="nextSyncQuestion()">下一题 →</button>
             </div>
         </div>
 
-        <!-- 页面 4：心跳共振子游戏 -->
-        <div id="game-touchheart" class="subgame-container">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <button class="nav-back-btn" onclick="backToLobby('game-touchheart')">✕ 退出</button>
-                <div style="font-size: 15px; font-weight: 700;">同步心率测试</div>
+        <!-- 游戏 3：心跳共振屏幕 -->
+        <div id="screen-touchheart" class="game-screen">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <button class="glass-btn" onclick="exitToLobby('screen-touchheart')">✕ 退出</button>
+                <div style="font-weight:700; font-size:15px;">同步心率测试</div>
             </div>
 
-            <div class="touch-pad" id="touchPad" onmousedown="startHeartPress()" onmouseup="endHeartPress()" ontouchstart="startHeartPress(event)" ontouchend="endHeartPress(event)">
-                <div class="big-pulse-heart" id="pulseHeart">❤️</div>
-                <div class="touch-count-text" id="pressHint">按住心形 · 感受同频脉搏</div>
+            <div class="pulse-pad" id="pulsePadArea">
+                <div class="pulse-heart-icon" id="pulseHeartEl">❤️</div>
+                <div style="font-size:14px; color:#8E8E93; margin-top:16px; font-weight:600;" id="pressStatusText">用手按住心形 · 感受同频脉搏</div>
             </div>
 
-            <div style="font-size: 12px; color: #8E8E93; line-height: 1.5;">
-                两人在屏幕上同时长按，心跳将随着坚持秒数越来越快，直至触发“星光爱心大爆发”！
+            <div style="font-size:12px; color:#8E8E93; line-height:1.5;">
+                用手指按住屏幕上的心，坚持越久，跳动越剧烈，超过 3 秒即可触发漫天爱心喷发！
             </div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // 游戏盒全局路由控制
+        // 1. 全局大厅路由与分类过滤
         // ==========================================
-        function openGame(gameId) {
+        function launchGame(gameId) {
             document.getElementById('lobby-view').style.display = 'none';
-            const target = document.getElementById(`game-${gameId}`);
-            target.style.display = 'flex';
+            const screen = document.getElementById(`screen-${gameId}`);
+            screen.style.display = 'flex';
 
             if (gameId === 'orbit') {
-                initOrbitGame();
+                startOrbitEngine();
             }
         }
 
-        function backToLobby(currentViewId) {
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            document.getElementById(currentViewId).style.display = 'none';
+        function exitToLobby(screenId) {
+            if (orbitAnimId) cancelAnimationFrame(orbitAnimId);
+            document.getElementById(screenId).style.display = 'none';
             document.getElementById('lobby-view').style.display = 'flex';
         }
 
-        function filterCategory(cat, el) {
+        function filterCategory(cat, chip) {
             document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
+            chip.classList.add('active');
 
-            const cards = document.querySelectorAll('.game-item-card');
-            cards.forEach(card => {
-                if (cat === 'all' || card.dataset.cat === cat) {
+            document.querySelectorAll('.game-card').forEach(card => {
+                if (cat === 'all' || card.dataset.category === cat) {
                     card.style.display = 'flex';
                 } else {
                     card.style.display = 'none';
@@ -671,268 +606,319 @@
         }
 
         // ==========================================
-        // 游戏 1：心动轨道 (即时物理对战引擎)
+        // 2. 游戏 1：心动轨道 (完整原生触摸与物理引擎)
         // ==========================================
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let animationFrameId = null;
-        let lastTime = 0;
+        const orbitCanvas = document.getElementById('orbitCanvas');
+        const orbitCtx = orbitCanvas.getContext('2d');
+        let orbitAnimId = null;
+        let lastFrameTime = 0;
 
-        const state = {
-            ball: { x: 0.5, y: 0.5, vx: 0.25, vy: 0.45, radius: 0.035, isHeartAccelerated: false },
+        const orbitState = {
+            ball: { x: 0.5, y: 0.5, vx: 0.28, vy: 0.46, radius: 0.04, accelerated: false },
             hostPaddle: { x: 0.5, y: 0.85, width: 0.28, height: 0.024 },
             guestPaddle: { x: 0.5, y: 0.15, width: 0.28, height: 0.024 },
             hostScore: 0,
             guestScore: 0,
-            currentRally: 0
+            rally: 0
         };
-        const trails = [];
+        const ballTrails = [];
 
-        function initOrbitGame() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
-            state.ball.x = 0.5;
-            state.ball.y = 0.5;
-            state.ball.vx = 0.25;
-            state.ball.vy = 0.45;
-            state.currentRally = 0;
-            state.ball.isHeartAccelerated = false;
-            updateOrbitHUD();
-            lastTime = performance.now();
-            animationFrameId = requestAnimationFrame(orbitLoop);
+        function resizeOrbitCanvas() {
+            const rect = orbitCanvas.parentElement.getBoundingClientRect();
+            orbitCanvas.width = rect.width * (window.devicePixelRatio || 1);
+            orbitCanvas.height = rect.height * (window.devicePixelRatio || 1);
+            orbitCtx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
         }
 
-        function orbitLoop(time) {
-            const dt = Math.min((time - lastTime) / 1000, 0.033);
-            lastTime = time;
-
-            state.ball.x += state.ball.vx * dt;
-            state.ball.y += state.ball.vy * dt;
-
-            trails.push({ x: state.ball.x, y: state.ball.y });
-            if (trails.length > 10) trails.shift();
-
-            if (state.ball.x - state.ball.radius <= 0) {
-                state.ball.x = state.ball.radius;
-                state.ball.vx = Math.abs(state.ball.vx);
-            } else if (state.ball.x + state.ball.radius >= 1) {
-                state.ball.x = 1 - state.ball.radius;
-                state.ball.vx = -Math.abs(state.ball.vx);
-            }
-
-            checkHit(state.hostPaddle, true);
-            checkHit(state.guestPaddle, false);
-
-            if (state.ball.y < 0) {
-                state.hostScore++;
-                resetOrbitRound(true);
-            } else if (state.ball.y > 1) {
-                state.guestScore++;
-                resetOrbitRound(false);
-            }
-
-            renderOrbit();
-            animationFrameId = requestAnimationFrame(orbitLoop);
+        function startOrbitEngine() {
+            resizeOrbitCanvas();
+            orbitState.ball.x = 0.5;
+            orbitState.ball.y = 0.5;
+            orbitState.ball.vx = 0.28;
+            orbitState.ball.vy = 0.46;
+            orbitState.ball.accelerated = false;
+            orbitState.rally = 0;
+            updateScoreDisplay();
+            lastFrameTime = performance.now();
+            orbitAnimId = requestAnimationFrame(orbitEngineTick);
         }
 
-        function checkHit(p, isHost) {
-            const b = state.ball;
-            if (Math.abs(b.x - p.x) < (p.width / 2 + b.radius * 0.7) && Math.abs(b.y - p.y) < (p.height / 2 + b.radius * 0.7)) {
+        function orbitEngineTick(timestamp) {
+            const dt = Math.min((timestamp - lastFrameTime) / 1000, 0.033);
+            lastFrameTime = timestamp;
+
+            const b = orbitState.ball;
+            b.x += b.vx * dt;
+            b.y += b.vy * dt;
+
+            ballTrails.push({ x: b.x, y: b.y });
+            if (ballTrails.length > 8) ballTrails.shift();
+
+            // 左右反弹
+            if (b.x - b.radius <= 0) {
+                b.x = b.radius;
+                b.vx = Math.abs(b.vx);
+            } else if (b.x + b.radius >= 1) {
+                b.x = 1 - b.radius;
+                b.vx = -Math.abs(b.vx);
+            }
+
+            // 挡板碰撞
+            handlePaddleHit(orbitState.hostPaddle, true);
+            handlePaddleHit(orbitState.guestPaddle, false);
+
+            // 得分判定
+            if (b.y < 0) {
+                orbitState.hostScore++;
+                resetBallRound(true);
+            } else if (b.y > 1) {
+                orbitState.guestScore++;
+                resetBallRound(false);
+            }
+
+            drawOrbitFrame();
+            orbitAnimId = requestAnimationFrame(orbitEngineTick);
+        }
+
+        function handlePaddleHit(paddle, isHost) {
+            const b = orbitState.ball;
+            if (Math.abs(b.x - paddle.x) < (paddle.width / 2 + b.radius * 0.8) &&
+                Math.abs(b.y - paddle.y) < (paddle.height / 2 + b.radius * 0.8)) {
                 if (isHost && b.vy > 0) {
                     b.vy = -Math.abs(b.vy);
-                    onPaddleBounce(p);
+                    applyBounceCurve(paddle);
                 } else if (!isHost && b.vy < 0) {
                     b.vy = Math.abs(b.vy);
-                    onPaddleBounce(p);
+                    applyBounceCurve(paddle);
                 }
             }
         }
 
-        function onPaddleBounce(p) {
-            state.currentRally++;
-            const offset = (state.ball.x - p.x) / (p.width / 2);
-            state.ball.vx += offset * 0.35;
-            if (state.currentRally >= 5 && !state.ball.isHeartAccelerated) {
-                state.ball.isHeartAccelerated = true;
-                state.ball.vx *= 1.25;
-                state.ball.vy *= 1.25;
+        function applyBounceCurve(paddle) {
+            orbitState.rally++;
+            const offset = (orbitState.ball.x - paddle.x) / (paddle.width / 2);
+            orbitState.ball.vx += offset * 0.35;
+
+            if (orbitState.rally >= 5 && !orbitState.ball.accelerated) {
+                orbitState.ball.accelerated = true;
+                orbitState.ball.vx *= 1.28;
+                orbitState.ball.vy *= 1.28;
             }
-            updateOrbitHUD();
+            updateScoreDisplay();
         }
 
-        function resetOrbitRound(scoredHost) {
-            state.ball.x = 0.5;
-            state.ball.y = 0.5;
-            state.currentRally = 0;
-            state.ball.isHeartAccelerated = false;
-            updateOrbitHUD();
+        function resetBallRound(hostScored) {
+            orbitState.ball.x = 0.5;
+            orbitState.ball.y = 0.5;
+            orbitState.rally = 0;
+            orbitState.ball.accelerated = false;
+            updateScoreDisplay();
             const angle = (Math.random() * 0.6 - 0.3) * Math.PI;
-            state.ball.vx = Math.sin(angle) * 0.55;
-            state.ball.vy = (scoredHost ? -1 : 1) * Math.cos(angle) * 0.55;
+            orbitState.ball.vx = Math.sin(angle) * 0.5;
+            orbitState.ball.vy = (hostScored ? -1 : 1) * Math.cos(angle) * 0.5;
         }
 
-        function updateOrbitHUD() {
-            document.getElementById('hostScore').innerText = state.hostScore;
-            document.getElementById('guestScore').innerText = state.guestScore;
-            const rEl = document.getElementById('rallyText');
-            rEl.innerText = state.ball.isHeartAccelerated ? `🔥 x${state.currentRally}` : `连击: ${state.currentRally}`;
+        function updateScoreDisplay() {
+            document.getElementById('hostScoreVal').innerText = orbitState.hostScore;
+            document.getElementById('guestScoreVal').innerText = orbitState.guestScore;
+            const rEl = document.getElementById('rallyLabel');
+            rEl.innerText = orbitState.ball.accelerated ? `🔥 连击 x${orbitState.rally}` : `连击: ${orbitState.rally}`;
         }
 
-        function renderOrbit() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const w = canvas.width, h = canvas.height;
+        function drawOrbitFrame() {
+            const rect = orbitCanvas.parentElement.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+            orbitCtx.clearRect(0, 0, w, h);
 
-            // 中线
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([8, 8]);
-            ctx.beginPath();
-            ctx.moveTo(0, h / 2);
-            ctx.lineTo(w, h / 2);
-            ctx.stroke();
-            ctx.setLineDash([]);
+            // 中场虚线
+            orbitCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            orbitCtx.lineWidth = 2;
+            orbitCtx.setLineDash([8, 8]);
+            orbitCtx.beginPath();
+            orbitCtx.moveTo(0, h / 2);
+            orbitCtx.lineTo(w, h / 2);
+            orbitCtx.stroke();
+            orbitCtx.setLineDash([]);
 
-            // 拖尾
-            for (let i = 0; i < trails.length; i++) {
-                ctx.fillStyle = `rgba(255, 107, 139, ${i / trails.length * 0.4})`;
-                ctx.beginPath();
-                ctx.arc(trails[i].x * w, trails[i].y * h, state.ball.radius * w * 0.8, 0, Math.PI * 2);
-                ctx.fill();
+            // 粒子拖尾
+            for (let i = 0; i < ballTrails.length; i++) {
+                orbitCtx.fillStyle = `rgba(255, 107, 139, ${(i / ballTrails.length) * 0.35})`;
+                orbitCtx.beginPath();
+                orbitCtx.arc(ballTrails[i].x * w, ballTrails[i].y * h, orbitState.ball.radius * w * 0.8, 0, Math.PI * 2);
+                orbitCtx.fill();
             }
 
-            // 球
-            const bx = state.ball.x * w, by = state.ball.y * h, br = state.ball.radius * w;
-            ctx.font = `${br * 2}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(state.ball.isHeartAccelerated ? '🔥' : '💖', bx, by);
+            // 爱心物理球
+            const bx = orbitState.ball.x * w;
+            const by = orbitState.ball.y * h;
+            const br = orbitState.ball.radius * w;
+            orbitCtx.font = `${Math.round(br * 2.2)}px Arial`;
+            orbitCtx.textAlign = 'center';
+            orbitCtx.textBaseline = 'middle';
+            orbitCtx.fillText(orbitState.ball.accelerated ? '🔥' : '💖', bx, by);
 
             // 挡板
-            drawP(state.hostPaddle, '#FF6B8B', w, h);
-            drawP(state.guestPaddle, '#6C92F4', w, h);
+            renderPaddle(orbitState.hostPaddle, '#FF6B8B', w, h);
+            renderPaddle(orbitState.guestPaddle, '#6C92F4', w, h);
         }
 
-        function drawP(p, c, w, h) {
-            ctx.fillStyle = c;
-            ctx.beginPath();
-            ctx.roundRect((p.x - p.width / 2) * w, (p.y - p.height / 2) * h, p.width * w, p.height * h, 10);
-            ctx.fill();
+        function renderPaddle(paddle, color, w, h) {
+            orbitCtx.fillStyle = color;
+            orbitCtx.shadowColor = color;
+            orbitCtx.shadowBlur = 12;
+            orbitCtx.beginPath();
+            const px = (paddle.x - paddle.width / 2) * w;
+            const py = (paddle.y - paddle.height / 2) * h;
+            const pw = paddle.width * w;
+            const ph = paddle.height * h;
+            orbitCtx.roundRect(px, py, pw, ph, 8);
+            orbitCtx.fill();
+            orbitCtx.shadowBlur = 0;
         }
 
-        // 触屏 / 鼠标双用滑动挡板
-        let isDown = false;
-        canvas.addEventListener('pointerdown', (e) => { isDown = true; moveP(e); });
-        window.addEventListener('pointermove', (e) => { if (isDown) moveP(e); });
-        window.addEventListener('pointerup', () => { isDown = false; });
+        // 核心修复：原生多指触控 (Multi-touch) 支持同时操控两块挡板
+        function processTouchEvents(e) {
+            e.preventDefault();
+            const rect = orbitCanvas.getBoundingClientRect();
+            for (let i = 0; i < e.touches.length; i++) {
+                const t = e.touches[i];
+                const nx = Math.max(0.15, Math.min(0.85, (t.clientX - rect.left) / rect.width));
+                const ny = (t.clientY - rect.top) / rect.height;
+                if (ny >= 0.5) {
+                    orbitState.hostPaddle.x = nx;
+                } else {
+                    orbitState.guestPaddle.x = nx;
+                }
+            }
+        }
 
-        function moveP(e) {
-            const rect = canvas.getBoundingClientRect();
-            const nx = Math.max(0.1, Math.min(0.9, (e.clientX - rect.left) / rect.width));
+        orbitCanvas.addEventListener('touchstart', processTouchEvents, { passive: false });
+        orbitCanvas.addEventListener('touchmove', processTouchEvents, { passive: false });
+
+        // 鼠标兼容
+        let mouseHold = false;
+        orbitCanvas.addEventListener('mousedown', (e) => { mouseHold = true; updatePaddleFromPointer(e); });
+        window.addEventListener('mousemove', (e) => { if (mouseHold) updatePaddleFromPointer(e); });
+        window.addEventListener('mouseup', () => { mouseHold = false; });
+
+        function updatePaddleFromPointer(e) {
+            const rect = orbitCanvas.getBoundingClientRect();
+            const nx = Math.max(0.15, Math.min(0.85, (e.clientX - rect.left) / rect.width));
             const ny = (e.clientY - rect.top) / rect.height;
-            if (ny >= 0.5) state.hostPaddle.x = nx;
-            else state.guestPaddle.x = nx;
+            if (ny >= 0.5) orbitState.hostPaddle.x = nx;
+            else orbitState.guestPaddle.x = nx;
         }
 
         // ==========================================
-        // 游戏 2：默契共振 (灵魂拷问与惩罚)
+        // 3. 游戏 2：默契共振 (修复移动端点击穿透与状态)
         // ==========================================
-        const questions = [
-            { q: "周末休息，更倾向于怎么过？", a: "🛋️ 窝在沙发看剧点外卖", b: "☕ 出门探店看展逛街", p: "背着对方在客厅走一圈！" },
-            { q: "旅行途中突然下大暴雨？", a: "☔ 随遇而安在咖啡馆发呆", b: "🗺️ 无论如何按原路线打卡", p: "给对方剥一个水果或揉肩 2 分钟！" },
-            { q: "突然中了一千万，第一件事？", a: "✈️ 立刻买机票去环球旅行", b: "🏦 存银行收利息慢慢躺平", p: "深情对视 30 秒不许眨眼！" },
-            { q: "深夜肚子饿了，会选择？", a: "🍢 叫上一大堆烧烤小龙虾", b: "🥛 喝杯热牛奶忍忍睡觉", p: "用可爱的语气说‘我最听你话了’！" }
+        const syncQuestions = [
+            { q: "周末休息，两个人更倾向于怎么过？", a: "🛋️ 窝在沙发看剧点外卖", b: "☕ 出门探店看展逛街", p: "惩罚：背着对方在客厅走一圈！" },
+            { q: "如果中了一千万，第一件事做什么？", a: "✈️ 立刻打包行李环球旅行", b: "🏦 存银行吃利息慢慢躺平", p: "惩罚：深情对视 30 秒不许眨眼！" },
+            { q: "旅行途中突然遇到大暴雨？", a: "☔ 随遇而安在咖啡馆发呆", b: "🗺️ 风雨无阻按原计划打卡", p: "惩罚：给对方剥一个水果或揉肩 2 分钟！" },
+            { q: "深夜肚子饿了，会倾向于？", a: "🍢 叫上一大堆烧烤小龙虾", b: "🥛 喝杯热牛奶忍忍睡觉", p: "惩罚：用最可爱的语气说‘我最听你话了’！" }
         ];
 
-        let qIndex = 0;
-        let pickHost = null;
-        let pickGuest = null;
-        let score = 0;
+        let curQIdx = 0;
+        let pickAState = null;
+        let pickBState = null;
+        let totalSyncScore = 0;
 
-        function syncPick(choice, isHost) {
-            if (isHost) {
-                pickHost = choice;
-                document.getElementById('hostA').classList.toggle('selected', choice === 'A');
-                document.getElementById('hostB').classList.toggle('selected', choice === 'B');
+        function handleSyncPick(choice, isPink) {
+            if (isPink) {
+                pickAState = choice;
+                document.getElementById('pinkBtnA').classList.toggle('active', choice === 'A');
+                document.getElementById('pinkBtnB').classList.toggle('active', choice === 'B');
             } else {
-                pickGuest = choice;
-                document.getElementById('guestA').classList.toggle('selected', choice === 'A');
-                document.getElementById('guestB').classList.toggle('selected', choice === 'B');
+                pickBState = choice;
+                document.getElementById('blueBtnA').classList.toggle('active', choice === 'A');
+                document.getElementById('blueBtnB').classList.toggle('active', choice === 'B');
             }
 
-            if (pickHost && pickGuest) {
-                const resBox = document.getElementById('resultBox');
-                resBox.style.display = 'block';
-                if (pickHost === pickGuest) {
-                    score += 10;
-                    document.getElementById('syncScore').innerText = score;
-                    document.getElementById('resultStatus').innerHTML = "🎉 <span style='color:#34C759;'>心有灵犀！默契达成！</span>";
-                    document.getElementById('penaltyText').innerText = "默契度 +10 分！继续保持～";
+            if (pickAState && pickBState) {
+                const panel = document.getElementById('syncResultPanel');
+                panel.style.display = 'block';
+                if (pickAState === pickBState) {
+                    totalSyncScore += 10;
+                    document.getElementById('syncScoreNum').innerText = totalSyncScore;
+                    document.getElementById('syncResultTitle').innerHTML = "🎉 <span style='color:#34C759;'>默契达成！心有灵犀！</span>";
+                    document.getElementById('syncPenaltyText').innerText = "默契分 +10！俩人想法完全一致～";
                 } else {
-                    document.getElementById('resultStatus').innerHTML = "💔 <span style='color:var(--pink-main);'>意见不一！触发情侣小惩罚：</span>";
-                    document.getElementById('penaltyText').innerText = questions[qIndex].p;
+                    document.getElementById('syncResultTitle').innerHTML = "💔 <span style='color:var(--pink-main);'>意见不一！触发情侣小惩罚：</span>";
+                    document.getElementById('syncPenaltyText').innerText = syncQuestions[curQIdx].p;
                 }
             }
         }
 
         function nextSyncQuestion() {
-            qIndex = (qIndex + 1) % questions.length;
-            pickHost = null;
-            pickGuest = null;
-            document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('selected'));
-            document.getElementById('resultBox').style.display = 'none';
+            curQIdx = (curQIdx + 1) % syncQuestions.length;
+            pickAState = null;
+            pickBState = null;
+            document.querySelectorAll('.sync-player-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('syncResultPanel').style.display = 'none';
 
-            const cur = questions[qIndex];
-            document.getElementById('qTag').innerText = `QUESTION ${qIndex + 1} / ${questions.length}`;
-            document.getElementById('qPrompt').innerText = cur.q;
-            document.getElementById('optAText').innerText = cur.a;
-            document.getElementById('optBText').innerText = cur.b;
+            const cur = syncQuestions[curQIdx];
+            document.getElementById('syncQIndexTag').innerText = `QUESTION ${curQIdx + 1} / ${syncQuestions.length}`;
+            document.getElementById('syncQTitle').innerText = cur.q;
+            document.getElementById('syncOptA').innerText = cur.a;
+            document.getElementById('syncOptB').innerText = cur.b;
         }
 
         // ==========================================
-        // 游戏 3：心跳共振 (长按同频脉搏)
+        // 4. 游戏 3：心跳共振 (修复移动端长按不灵与手势冲突)
         // ==========================================
-        let heartTimer = null;
-        let pressSeconds = 0;
+        const pad = document.getElementById('pulsePadArea');
+        const heart = document.getElementById('pulseHeartEl');
+        const statusText = document.getElementById('pressStatusText');
+        let pulseTimer = null;
+        let heldSeconds = 0;
 
-        function startHeartPress(e) {
-            if (e && e.preventDefault) e.preventDefault();
-            pressSeconds = 0;
-            const heart = document.getElementById('pulseHeart');
-            const hint = document.getElementById('pressHint');
-
-            heartTimer = setInterval(() => {
-                pressSeconds += 0.2;
-                const scale = 1 + Math.sin(pressSeconds * 8) * 0.25;
+        function startPress() {
+            if (pulseTimer) return;
+            heldSeconds = 0;
+            pulseTimer = setInterval(() => {
+                heldSeconds += 0.1;
+                const scale = 1 + Math.sin(heldSeconds * 9) * 0.28;
                 heart.style.transform = `scale(${scale})`;
-                hint.innerText = `同步心动中... 已坚持 ${(pressSeconds).toFixed(1)} 秒`;
+                statusText.innerText = `同频心动中... 已坚持 ${heldSeconds.toFixed(1)} 秒`;
 
-                if (pressSeconds > 4) {
-                    spawnHeartEffect('game-touchheart');
+                if (heldSeconds > 3.0) {
+                    triggerFloatingHeart('screen-touchheart');
                 }
-            }, 100);
+            }, 80);
         }
 
-        function endHeartPress(e) {
-            if (e && e.preventDefault) e.preventDefault();
-            if (heartTimer) clearInterval(heartTimer);
-            const heart = document.getElementById('pulseHeart');
+        function releasePress() {
+            if (pulseTimer) {
+                clearInterval(pulseTimer);
+                pulseTimer = null;
+            }
             heart.style.transform = 'scale(1)';
-            const hint = document.getElementById('pressHint');
-            if (pressSeconds >= 3) {
-                hint.innerText = `❤️ 太棒了！达成深度同频 (${(pressSeconds).toFixed(1)}s)`;
+            if (heldSeconds >= 2.5) {
+                statusText.innerText = `❤️ 太棒了！达成深度心跳同频 (${heldSeconds.toFixed(1)}s)`;
             } else {
-                hint.innerText = '按住心形 · 感受同频脉搏';
+                statusText.innerText = '用手按住心形 · 感受同频脉搏';
             }
         }
 
-        function spawnHeartEffect(containerId) {
-            const heart = document.createElement('div');
-            heart.className = 'floating-heart';
-            heart.innerText = ['💖', '💕', '✨', '🥰', '🔥'][Math.floor(Math.random() * 5)];
-            heart.style.left = `${20 + Math.random() * 60}%`;
-            heart.style.bottom = '80px';
-            document.getElementById(containerId).appendChild(heart);
-            setTimeout(() => heart.remove(), 1300);
+        pad.addEventListener('touchstart', (e) => { e.preventDefault(); startPress(); }, { passive: false });
+        pad.addEventListener('touchend', (e) => { e.preventDefault(); releasePress(); }, { passive: false });
+        pad.addEventListener('touchcancel', releasePress);
+        pad.addEventListener('mousedown', startPress);
+        window.addEventListener('mouseup', releasePress);
+
+        // ==========================================
+        // 5. 浮动爱心动效
+        // ==========================================
+        function triggerFloatingHeart(containerId) {
+            const h = document.createElement('div');
+            h.className = 'floating-heart';
+            h.innerText = ['💖', '💕', '✨', '🥰', '🔥'][Math.floor(Math.random() * 5)];
+            h.style.left = `${15 + Math.random() * 70}%`;
+            h.style.bottom = '80px';
+            document.getElementById(containerId).appendChild(h);
+            setTimeout(() => h.remove(), 1200);
         }
     </script>
 </body>
