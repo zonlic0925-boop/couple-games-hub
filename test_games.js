@@ -140,6 +140,7 @@ const sandbox = {
     webkitAudioContext: mockWindow.webkitAudioContext,
     setTimeout, clearTimeout, setInterval, clearInterval,
     mqtt,
+    assert,
     __flushRAF: mockWindow.__flushRAF
 };
 const context = vm.createContext(sandbox);
@@ -160,7 +161,7 @@ async function check(name, fn) {
         console.log(`✅ ${name}`);
     } catch (err) {
         failed++;
-        console.error(`❌ ${name}:`, err && err.stack ? err.stack.split('\n').slice(0, 3).join(' | ') : err);
+        console.error(`❌ ${name}:`, err ? (err.message || err.toString()) : 'error');
     }
 }
 function assert(cond, msg) {
@@ -319,6 +320,61 @@ async function run() {
     });
     check('对联机 rematch 请求不抛错', () => {
         vm.runInContext(`handleNetEvent('rematch', null)`, context);
+    });
+
+    // ========== 6. GameFX 特效与 GameAI 智能陪练测试 ==========
+    console.log('\n--- GameFX 与 GameAI 引擎测试 ---');
+    check('GameFX 粒子系统、火花生成与震屏', () => {
+        vm.runInContext(`
+            GameFX.particles = [];
+            GameFX.shockwaves = [];
+            GameFX.floatingTexts = [];
+            GameFX.shake('pingpongCanvas', 10, 100);
+            assert(GameFX.shakes['pingpongCanvas'], '震屏记录应已写入');
+            GameFX.addSparks(100, 100, '#FFD166', 15);
+            assert(GameFX.particles.length === 15, '应生成 15 颗物理火花粒子');
+            GameFX.addShockwave(50, 50, '#2C2C2E', 25);
+            assert(GameFX.shockwaves.length === 1, '应生成 1 个扩散水波纹');
+            GameFX.addFloatText(80, 80, 'PERFECT!', '#FF6B8B');
+            assert(GameFX.floatingTexts.length === 1, '应生成 1 组浮动文字');
+        `, context);
+    });
+
+    check('GameAI 算法库决策：五子棋/黑白棋/四子棋/乒乓球', () => {
+        vm.runInContext(`
+            // 五子棋 AI 决策
+            const grid15 = Array.from({ length: 15 }, () => Array(15).fill(0));
+            grid15[7][7] = 1; // 玩家落子中心
+            const mv = GameAI.gomoku(grid15, 2);
+            assert(Array.isArray(mv) && mv.length === 2, '五子棋 AI 应返回落子坐标');
+
+            // 四子棋 AI 决策
+            const c4g = Array.from({ length: 6 }, () => Array(7).fill(null));
+            const c4col = GameAI.connect4(c4g, 'blue', 'pink');
+            assert(typeof c4col === 'number' && c4col >= 0 && c4col < 7, '四子棋 AI 应返回有效列号');
+
+            // 乒乓球 AI 移动跟随
+            const paddle = { x: 100 };
+            const ball = { x: 250, vx: 2, vy: -5 };
+            GameAI.pingpong(paddle, ball, { width: 375, height: 600 });
+            assert(paddle.x > 100, '乒乓 AI 球拍应主动向右侧球位置跟随移动');
+        `, context);
+    });
+
+    check('triggerAudio 物理拟真音效工厂调用', () => {
+        vm.runInContext(`
+            triggerAudio('wood');
+            triggerAudio('tennis');
+            triggerAudio('puck');
+            triggerAudio('cannon');
+            triggerAudio('explosion');
+            triggerAudio('stone');
+            triggerAudio('chip');
+            triggerAudio('pop');
+            triggerAudio('brick');
+            triggerAudio('smash');
+            triggerAudio('fanfare');
+        `, context);
     });
 
     console.log(`\n========================================`);

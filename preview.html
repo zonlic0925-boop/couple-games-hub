@@ -876,6 +876,7 @@
         .mode-btn .m-t { font-weight: 800; font-size: 15px; color: var(--text-dark); }
         .mode-btn .m-d { font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.3; }
         .mode-local { background: linear-gradient(135deg, #FFF0F4, #FFE9EE); }
+        .mode-ai { background: linear-gradient(135deg, #F0FDF4, #DCFCE7); }
         .mode-online { background: linear-gradient(135deg, #EEF3FF, #E6EEFF); }
 
         /* ================= 联网对战：配对面板 ================= */
@@ -1062,6 +1063,10 @@
                 <div class="mode-btn mode-local" onclick="startLocalGame()">
                     <div class="m-ico" style="background:#ffffff;">📱</div>
                     <div><div class="m-t">同屏对战</div><div class="m-d">两人在同一台设备上分屏对决，多指互不干扰</div></div>
+                </div>
+                <div class="mode-btn mode-ai" onclick="startAIGame()">
+                    <div class="m-ico" style="background:#ffffff;">🤖</div>
+                    <div><div class="m-t">单人练习 (智能 AI 陪练)</div><div class="m-d">一人也能爽快畅玩，智能机器人自动迎战</div></div>
                 </div>
                 <div class="mode-btn mode-online" onclick="openNetPanel()">
                     <div class="m-ico" style="background:#ffffff;">🌐</div>
@@ -1864,43 +1869,159 @@
             return audioCtx;
         }
 
-        function triggerAudio(type = 'tap') {
+        function triggerAudio(type = 'tap', opts = {}) {
             try {
                 const ctx = getAudioContext();
                 if (!ctx) return;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
                 const now = ctx.currentTime;
+
+                // 物理拟真音效工厂
                 if (type === 'tap') {
-                    osc.frequency.setValueAtTime(440, now);
-                    gain.gain.setValueAtTime(0.1, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
-                    osc.start(now);
-                    osc.stop(now + 0.08);
-                } else if (type === 'shoot') {
-                    osc.frequency.setValueAtTime(600, now);
-                    osc.frequency.exponentialRampToValueAtTime(150, now + 0.12);
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(520, now);
+                    osc.frequency.exponentialRampToValueAtTime(320, now + 0.04);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.05);
+                } else if (type === 'wood' || type === 'table') {
+                    // 乒乓球/木板撞击 (双振荡器叠加：低频木质共振 + 高频清脆敲击)
+                    const low = ctx.createOscillator();
+                    const high = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    low.type = 'sine'; high.type = 'triangle';
+                    const base = opts.freq || (type === 'table' ? 420 : 780);
+                    low.frequency.setValueAtTime(base * 0.45, now);
+                    low.frequency.exponentialRampToValueAtTime(90, now + 0.07);
+                    high.frequency.setValueAtTime(base, now);
+                    high.frequency.exponentialRampToValueAtTime(220, now + 0.05);
+                    const power = Math.min(0.28, (opts.vol || 0.18));
+                    gain.gain.setValueAtTime(power, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    low.connect(gain); high.connect(gain); gain.connect(ctx.destination);
+                    low.start(now); high.start(now); low.stop(now + 0.08); high.stop(now + 0.08);
+                } else if (type === 'tennis' || type === 'racket') {
+                    // 网球网面破空抽击
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    const freq = 480 + Math.random() * 80;
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.frequency.exponentialRampToValueAtTime(120, now + 0.12);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.12);
+                } else if (type === 'puck') {
+                    // 冰球硬质金属碰撞声
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(1100, now);
+                    osc.frequency.exponentialRampToValueAtTime(320, now + 0.06);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.06);
+                } else if (type === 'cannon' || type === 'shoot') {
+                    // 坦克主炮轰鸣：低音重炮 + 扫频
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(160, now);
+                    osc.frequency.exponentialRampToValueAtTime(30, now + 0.18);
+                    gain.gain.setValueAtTime(0.28, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.2);
+                } else if (type === 'explosion' || type === 'die') {
+                    // 剧烈爆炸轰鸣
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(120, now);
+                    osc.frequency.exponentialRampToValueAtTime(25, now + 0.35);
+                    gain.gain.setValueAtTime(0.35, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.38);
+                    triggerVibrate(60);
+                } else if (type === 'stone') {
+                    // 围棋玉石落子声 (清脆双击质感)
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(1760, now);
+                    osc.frequency.exponentialRampToValueAtTime(440, now + 0.045);
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.05);
+                } else if (type === 'chip') {
+                    // 四子棋落柱滑动清脆声
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.exponentialRampToValueAtTime(520, now + 0.06);
                     gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
-                    osc.start(now);
-                    osc.stop(now + 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.06);
+                } else if (type === 'pop') {
+                    // 吃食物音效：五声音阶递增 (C4-D4-E4-G4-A4-C5)，连击越吃越高！
+                    const pentatonic = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99];
+                    const idx = (opts.combo || 0) % pentatonic.length;
+                    const freq = pentatonic[idx];
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 1.3, now + 0.08);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.1);
+                } else if (type === 'brick') {
+                    // 水晶打碎多谐波
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'square';
+                    const pitch = 600 + (opts.pitch || 0) * 40;
+                    osc.frequency.setValueAtTime(pitch, now);
+                    osc.frequency.exponentialRampToValueAtTime(pitch * 0.7, now + 0.07);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.07);
+                } else if (type === 'smash') {
+                    // 绝杀扣杀音效
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(680, now);
+                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.18);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now); osc.stop(now + 0.2);
+                    triggerVibrate(40);
                 } else if (type === 'score' || type === 'win') {
-                    osc.frequency.setValueAtTime(523.25, now);
-                    osc.frequency.setValueAtTime(659.25, now + 0.08);
-                    osc.frequency.setValueAtTime(783.99, now + 0.16);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-                    osc.start(now);
-                    osc.stop(now + 0.35);
-                } else if (type === 'die') {
-                    osc.frequency.setValueAtTime(200, now);
-                    osc.frequency.exponentialRampToValueAtTime(60, now + 0.25);
-                    gain.gain.setValueAtTime(0.2, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-                    osc.start(now);
-                    osc.stop(now + 0.25);
+                    // 胜利大调明亮琶音 (C大调和弦 C-E-G-C5)
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((f, i) => {
+                        const o = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        o.type = 'triangle';
+                        o.frequency.setValueAtTime(f, now + i * 0.08);
+                        g.gain.setValueAtTime(0.18, now + i * 0.08);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.28);
+                        o.connect(g); g.connect(ctx.destination);
+                        o.start(now + i * 0.08);
+                        o.stop(now + i * 0.08 + 0.28);
+                    });
                 }
             } catch (e) {}
         }
@@ -1909,6 +2030,442 @@
             if (navigator.vibrate) {
                 try { navigator.vibrate(ms); } catch (e) {}
             }
+        }
+
+        /* ================= 视觉打击感与特效引擎 (GameFX) ================= */
+        const GameFX = {
+            shakes: {}, // canvasId -> { intensity, endTime, offsetX, offsetY }
+            particles: [], // { x, y, vx, vy, size, color, alpha, decay, shape, life }
+            floatingTexts: [], // { x, y, text, color, alpha, vy, scale }
+            shockwaves: [], // { x, y, r, maxR, color, alpha }
+
+            shake(canvasId, intensity = 8, durationMs = 240) {
+                const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+                this.shakes[canvasId] = {
+                    intensity,
+                    endTime: now + durationMs,
+                    duration: durationMs,
+                    offsetX: 0,
+                    offsetY: 0
+                };
+            },
+
+            addSparks(x, y, color = '#FFD166', count = 12, speed = 4) {
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const spd = (0.5 + Math.random() * 0.8) * speed;
+                    this.particles.push({
+                        x, y,
+                        vx: Math.cos(angle) * spd,
+                        vy: Math.sin(angle) * spd,
+                        size: 2 + Math.random() * 3,
+                        color,
+                        alpha: 1,
+                        decay: 0.025 + Math.random() * 0.03,
+                        shape: 'spark'
+                    });
+                }
+            },
+
+            addExplosion(x, y, color = '#FF4757', count = 24) {
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const spd = 1.5 + Math.random() * 5.5;
+                    this.particles.push({
+                        x, y,
+                        vx: Math.cos(angle) * spd,
+                        vy: Math.sin(angle) * spd,
+                        size: 3 + Math.random() * 6,
+                        color: i % 2 === 0 ? color : '#FFA502',
+                        alpha: 1,
+                        decay: 0.02 + Math.random() * 0.025,
+                        shape: 'smoke'
+                    });
+                }
+            },
+
+            addShockwave(x, y, color = 'rgba(255,107,139,0.8)', maxR = 40) {
+                this.shockwaves.push({ x, y, r: 4, maxR, color, alpha: 1 });
+            },
+
+            addFloatText(x, y, text, color = '#FFD166') {
+                this.floatingTexts.push({
+                    x, y, text, color,
+                    alpha: 1, vy: -1.6, scale: 1.2
+                });
+            },
+
+            applyShake(canvasId, ctx) {
+                const s = this.shakes[canvasId];
+                if (!s) return;
+                const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+                if (now >= s.endTime) {
+                    delete this.shakes[canvasId];
+                    return;
+                }
+                const progress = (s.endTime - now) / s.duration;
+                const curIntensity = s.intensity * progress;
+                s.offsetX = (Math.random() - 0.5) * curIntensity * 2;
+                s.offsetY = (Math.random() - 0.5) * curIntensity * 2;
+                ctx.translate(s.offsetX, s.offsetY);
+            },
+
+            draw(canvasId, ctx) {
+                if (!ctx) return;
+                this.render(ctx);
+            },
+
+            render(ctx, width, height) {
+                if (!ctx) return;
+                // 绘制水波冲击圈
+                for (let i = this.shockwaves.length - 1; i >= 0; i--) {
+                    const sw = this.shockwaves[i];
+                    sw.r += 2.2;
+                    sw.alpha = Math.max(0, 1 - sw.r / sw.maxR);
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
+                    ctx.strokeStyle = sw.color;
+                    ctx.lineWidth = 3 * sw.alpha;
+                    ctx.globalAlpha = sw.alpha;
+                    ctx.stroke();
+                    ctx.restore();
+                    if (sw.alpha <= 0) this.shockwaves.splice(i, 1);
+                }
+
+                // 绘制物理粒子
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vx *= 0.94;
+                    p.vy *= 0.94;
+                    p.alpha -= p.decay;
+                    if (p.alpha <= 0) {
+                        this.particles.splice(i, 1);
+                        continue;
+                    }
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.alpha);
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // 绘制浮动文字 (连击/扣杀/完美)
+                for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+                    const ft = this.floatingTexts[i];
+                    ft.y += ft.vy;
+                    ft.alpha -= 0.02;
+                    if (ft.scale > 1) ft.scale -= 0.02;
+                    if (ft.alpha <= 0) {
+                        this.floatingTexts.splice(i, 1);
+                        continue;
+                    }
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, ft.alpha);
+                    ctx.font = `900 ${Math.round(18 * ft.scale)}px "PingFang SC", sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#111';
+                    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                    ctx.shadowBlur = 6;
+                    ctx.strokeText(ft.text, ft.x, ft.y);
+                    ctx.fillStyle = ft.color;
+                    ctx.fillText(ft.text, ft.x, ft.y);
+                    ctx.restore();
+                }
+            }
+        };
+
+        /* ================= 全能智能 AI 陪练引擎 (GameAI) ================= */
+        let AI_MODE = false;
+        let aiTickCount = 0;
+
+        const GameAI = {
+            // 乒乓球 AI：平滑跟随球心并加入轻微预判与边缘切削
+            pingpong(paddle, ball, canvas) {
+                if (!paddle || !ball || !canvas) return;
+                const paddleW = (canvas.width * 0.28);
+                const targetX = ball.x - paddleW / 2;
+                const lerp = Math.min(0.25, 0.12 + (ball.speed || 6) * 0.008);
+                paddle.x += (targetX - paddle.x) * lerp;
+                paddle.x = Math.max(0, Math.min(canvas.width - paddleW, paddle.x));
+            },
+
+            // 网球 AI：底线巡航与过网反抽
+            tennis(guestRacket, ball, canvas) {
+                if (!guestRacket || !ball || !canvas) return;
+                const rw = (canvas.width * 0.25);
+                const targetX = ball.x - rw / 2;
+                const lerp = ball.vy < 0 ? 0.20 : 0.09;
+                guestRacket.x += (targetX - guestRacket.x) * lerp;
+                guestRacket.x = Math.max(10, Math.min(canvas.width - rw - 10, guestRacket.x));
+            },
+
+            // 空气曲棍球 AI：门前弧线防守，小球过半场时主动突前击打
+            airhockey(mallet, puck, canvas) {
+                if (!mallet || !puck || !canvas) return;
+                const w = canvas.width, h = canvas.height;
+                let targetX = puck.x;
+                let targetY = h * 0.18;
+                if (puck.y < h * 0.45 && puck.vy < 0) {
+                    targetX = puck.x;
+                    targetY = Math.min(h * 0.38, puck.y);
+                }
+                mallet.x += (targetX - mallet.x) * 0.18;
+                mallet.y += (targetY - mallet.y) * 0.18;
+                mallet.x = Math.max(40, Math.min(w - 40, mallet.x));
+                mallet.y = Math.max(40, Math.min(h * 0.44, mallet.y));
+            },
+
+            // 坦克对决 AI：追踪敌方坦克角度并适时开火
+            tank(me, enemy, walls, w, h, onFire) {
+                if (!me || !enemy) return;
+                aiTickCount++;
+                const dx = enemy.x - me.x;
+                const dy = enemy.y - me.y;
+                const targetAngle = Math.atan2(dy, dx);
+                let diff = targetAngle - me.angle;
+                while (diff < -Math.PI) diff += Math.PI * 2;
+                while (diff > Math.PI) diff -= Math.PI * 2;
+                me.angle += Math.sign(diff) * Math.min(Math.abs(diff), 0.07);
+
+                const dist = Math.hypot(dx, dy);
+                if (dist > 120) {
+                    me.x += Math.cos(me.angle) * 1.5;
+                    me.y += Math.sin(me.angle) * 1.5;
+                }
+                me.x = Math.max(25, Math.min(w - 25, me.x));
+                me.y = Math.max(25, Math.min(h - 25, me.y));
+
+                if (Math.abs(diff) < 0.25 && aiTickCount % 50 === 0 && typeof onFire === 'function') {
+                    onFire('guest');
+                }
+            },
+
+            // 五子棋 AI：启发式攻防评估（优先阻止 4 连/3 连，次选形成己方连子）
+            gomoku(grid, aiSide = 2) {
+                const oppSide = aiSide === 1 ? 2 : 1;
+                const size = grid.length;
+                let bestScore = -1;
+                let bestMove = null;
+
+                const evaluatePoint = (r, c, side) => {
+                    const dirs = [[1, 0], [0, 1], [1, 1], [1, -1]];
+                    let total = 0;
+                    dirs.forEach(([dr, dc]) => {
+                        let count = 1;
+                        for (let step = 1; step < 5; step++) {
+                            const nr = r + dr * step, nc = c + dc * step;
+                            if (nr >= 0 && nr < size && nc >= 0 && nc < size && grid[nr][nc] === side) count++;
+                            else break;
+                        }
+                        for (let step = 1; step < 5; step++) {
+                            const nr = r - dr * step, nc = c - dc * step;
+                            if (nr >= 0 && nr < size && nc >= 0 && nc < size && grid[nr][nc] === side) count++;
+                            else break;
+                        }
+                        if (count >= 5) total += 100000;
+                        else if (count === 4) total += 5000;
+                        else if (count === 3) total += 400;
+                        else if (count === 2) total += 30;
+                    });
+                    return total;
+                };
+
+                for (let r = 0; r < size; r++) {
+                    for (let c = 0; c < size; c++) {
+                        if (grid[r][c] === 0) {
+                            // 己方攻击分 + 对方防守分（加权）
+                            const attack = evaluatePoint(r, c, aiSide);
+                            const defense = evaluatePoint(r, c, oppSide);
+                            const centerBias = 15 - Math.abs(r - 7) - Math.abs(c - 7);
+                            const score = attack * 1.2 + defense + centerBias;
+                            if (score > bestScore) {
+                                bestScore = score;
+                                bestMove = [r, c];
+                            }
+                        }
+                    }
+                }
+                return bestMove || [Math.floor(size / 2), Math.floor(size / 2)];
+            },
+
+            // 黑白棋 AI：位置权重评估（角位 100，近角 -20，边位 10，翻子贪心）
+            reversi(grid, aiSide = 2, validMoves = []) {
+                if (!validMoves || validMoves.length === 0) return null;
+                const weights = [
+                    [100, -20, 10,  5,  5, 10, -20, 100],
+                    [-20, -50, -2, -2, -2, -2, -50, -20],
+                    [ 10,  -2, -1, -1, -1, -1,  -2,  10],
+                    [  5,  -2, -1,  0,  0, -1,  -2,   5],
+                    [  5,  -2, -1,  0,  0, -1,  -2,   5],
+                    [ 10,  -2, -1, -1, -1, -1,  -2,  10],
+                    [-20, -50, -2, -2, -2, -2, -50, -20],
+                    [100, -20, 10,  5,  5, 10, -20, 100]
+                ];
+                let bestScore = -99999;
+                let bestMove = validMoves[0];
+                validMoves.forEach(([r, c]) => {
+                    const score = (weights[r] && weights[r][c] !== undefined ? weights[r][c] : 0) + Math.random() * 3;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = [r, c];
+                    }
+                });
+                return bestMove;
+            },
+
+            // 四子棋 AI：寻找成四胜点或拦截对方成四
+            connect4(grid, myColor = 'blue', oppColor = 'pink') {
+                const cols = grid[0].length;
+                const rows = grid.length;
+                const getDropRow = (c) => {
+                    for (let r = rows - 1; r >= 0; r--) {
+                        if (!grid[r][c]) return r;
+                    }
+                    return -1;
+                };
+
+                const checkWinAt = (r, c, color) => {
+                    const dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
+                    return dirs.some(([dr, dc]) => {
+                        let count = 1;
+                        for (let s = 1; s < 4; s++) {
+                            const nr = r + dr * s, nc = c + dc * s;
+                            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] === color) count++;
+                            else break;
+                        }
+                        for (let s = 1; s < 4; s++) {
+                            const nr = r - dr * s, nc = c - dc * s;
+                            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] === color) count++;
+                            else break;
+                        }
+                        return count >= 4;
+                    });
+                };
+
+                // 1. 必胜落子
+                for (let c = 0; c < cols; c++) {
+                    const r = getDropRow(c);
+                    if (r !== -1 && checkWinAt(r, c, myColor)) return c;
+                }
+                // 2. 必救落子
+                for (let c = 0; c < cols; c++) {
+                    const r = getDropRow(c);
+                    if (r !== -1 && checkWinAt(r, c, oppColor)) return c;
+                }
+                // 3. 居中偏好
+                const validCols = [];
+                for (let c = 0; c < cols; c++) {
+                    if (getDropRow(c) !== -1) validCols.push(c);
+                }
+                validCols.sort((a, b) => Math.abs(a - 3) - Math.abs(b - 3));
+                return validCols[0] !== undefined ? validCols[0] : 3;
+            },
+
+            // 贪吃蛇 AI：曼哈顿求最短路径 + 简单自保避障
+            snake(mySnake, otherSnake, foods, cols, rows) {
+                if (!mySnake || !mySnake.alive || mySnake.body.length === 0) return;
+                const head = mySnake.body[0];
+                const dirs = ['up', 'down', 'left', 'right'];
+                const opposite = { up: 'down', down: 'up', left: 'right', right: 'left' };
+                const deltas = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+
+                // 寻找最近食物
+                let target = foods[0] || { x: Math.floor(cols / 2), y: Math.floor(rows / 2) };
+                let minDist = 9999;
+                foods.forEach(f => {
+                    const d = Math.abs(f.x - head.x) + Math.abs(f.y - head.y);
+                    if (d < minDist) { minDist = d; target = f; }
+                });
+
+                const isSafe = (x, y) => {
+                    if (x < 0 || x >= cols || y < 0 || y >= rows) return false;
+                    if (mySnake.body.some(b => b.x === x && b.y === y)) return false;
+                    if (otherSnake && otherSnake.body.some(b => b.x === x && b.y === y)) return false;
+                    return true;
+                };
+
+                let bestDir = null;
+                let bestD = 9999;
+                dirs.forEach(d => {
+                    if (d === opposite[mySnake.dir]) return;
+                    const [dx, dy] = deltas[d];
+                    const nx = head.x + dx, ny = head.y + dy;
+                    if (isSafe(nx, ny)) {
+                        const dist = Math.abs(nx - target.x) + Math.abs(ny - target.y);
+                        if (dist < bestD) {
+                            bestD = dist;
+                            bestDir = d;
+                        }
+                    }
+                });
+
+                if (bestDir && bestDir !== mySnake.dir) {
+                    const turnType = (bestDir === 'left' && mySnake.dir === 'up') ||
+                                     (bestDir === 'right' && mySnake.dir === 'down') ||
+                                     (bestDir === 'up' && mySnake.dir === 'right') ||
+                                     (bestDir === 'down' && mySnake.dir === 'left') ? 'left' : 'right';
+                    handleSnakeTurn('guest', turnType, true);
+                }
+            },
+
+            // 打砖块 AI：平滑跟随球体
+            breakout(paddle, ball, w) {
+                if (!paddle || !ball) return;
+                const targetX = ball.x - paddle.w / 2;
+                paddle.x += (targetX - paddle.x) * 0.16;
+                paddle.x = Math.max(0, Math.min(w - paddle.w, paddle.x));
+            },
+
+            // 俄罗斯方块 AI：随机移动与下落模拟
+            tetris(well) {
+                if (!well || !well.piece) return;
+                const rand = Math.random();
+                if (rand < 0.4) {
+                    ttMove(well, -1);
+                } else if (rand < 0.7) {
+                    ttMove(well, 1);
+                } else if (rand < 0.85) {
+                    ttRotate(well);
+                } else {
+                    ttDrop(well);
+                }
+            },
+
+            // 迷宫竞速 AI：简单右手法则墙壁跟踪移动
+            maze(player, grid, mw, mh) {
+                if (!player) return;
+                const cx = (mw - 1) / 2, cy = (mh - 1) / 2;
+                const dirs = ['up', 'down', 'left', 'right'];
+                const deltas = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+                dirs.sort((a, b) => {
+                    const da = Math.hypot(player.x + deltas[a][0] - cx, player.y + deltas[a][1] - cy);
+                    const db = Math.hypot(player.x + deltas[b][0] - cx, player.y + deltas[b][1] - cy);
+                    return da - db;
+                });
+                for (const d of dirs) {
+                    const [dx, dy] = deltas[d];
+                    const nx = player.x + dx, ny = player.y + dy;
+                    if (nx >= 0 && nx < mw && ny >= 0 && ny < mh && grid[ny][nx] === 0) {
+                        player.x = nx;
+                        player.y = ny;
+                        break;
+                    }
+                }
+            }
+        };
+
+        function startAIGame() {
+            closeModeSheet();
+            AI_MODE = true;
+            if (NET.active) netDisconnect();
+            launchGame(selectedGameId);
+            showGlobalToast('🤖 AI 陪练模式已就绪！蓝方由 AI 代打');
         }
 
         function showGameModal({ icon = '🏆', title = '获胜！', msg = '', onRestart, onLobby }) {
@@ -2047,7 +2604,19 @@
 
         function startLocalGame() {
             closeModeSheet();
+            AI_MODE = false;
+            if (NET.active) netDisconnect();
             if (sheetGameId) launchGame(sheetGameId);
+        }
+
+        function startAIGame() {
+            closeModeSheet();
+            AI_MODE = true;
+            if (NET.active) netDisconnect();
+            if (sheetGameId) {
+                launchGame(sheetGameId);
+                showGlobalToast('🤖 AI 智能陪练已就绪！蓝方由机器人自动迎战');
+            }
         }
 
         function openNetPanel() {
@@ -2499,12 +3068,20 @@
             const b = orbitState.ball;
             if (Math.abs(b.x - paddle.x) < (paddle.width / 2 + b.radius * 0.8) &&
                 Math.abs(b.y - paddle.y) < (paddle.height / 2 + b.radius * 0.8)) {
+                const rect = orbitCanvas.parentElement.getBoundingClientRect();
+                const w = rect.width, h = rect.height;
                 if (isHost && b.vy > 0) {
                     b.vy = -Math.abs(b.vy);
                     applyBounceCurve(paddle);
+                    triggerAudio('wood', { freq: 700 + orbitState.rally * 35 });
+                    GameFX.addSparks(b.x * w, b.y * h, '#FF6B8B', 6);
+                    if (orbitState.ball.accelerated) GameFX.shake('orbitCanvas', 7, 120);
                 } else if (!isHost && b.vy < 0) {
                     b.vy = Math.abs(b.vy);
                     applyBounceCurve(paddle);
+                    triggerAudio('wood', { freq: 700 + orbitState.rally * 35 });
+                    GameFX.addSparks(b.x * w, b.y * h, '#6C92F4', 6);
+                    if (orbitState.ball.accelerated) GameFX.shake('orbitCanvas', 7, 120);
                 }
             }
         }
@@ -2576,6 +3153,15 @@
             // 挡板
             renderPaddle(orbitState.hostPaddle, '#FF6B8B', w, h);
             renderPaddle(orbitState.guestPaddle, '#6C92F4', w, h);
+
+            // AI 陪练更新
+            if (AI_MODE && !NET.active) {
+                orbitState.guestPaddle.x += (orbitState.ball.x - orbitState.guestPaddle.x) * 0.16;
+                orbitState.guestPaddle.x = Math.max(0.16, Math.min(0.84, orbitState.guestPaddle.x));
+            }
+
+            // 特效粒子绘制
+            GameFX.draw('orbitCanvas', orbitCtx);
         }
 
         function renderPaddle(paddle, color, w, h) {
@@ -2880,7 +3466,6 @@
                     if (who === 'guest') netSendInput('fire', 'guest');
                     return;
                 }
-                // 房主设备：自己开火本地模拟，蓝方开火由输入事件触发
             }
             const t = who === 'guest' ? tankGuest : tankHost;
             const bx = t.x + Math.cos(t.angle) * (t.r + 6);
@@ -2896,21 +3481,18 @@
                 maxBounces: 2,
                 life: 260
             });
-            for (let i = 0; i < 5; i++) {
-                tankParticles.push({
-                    x: bx, y: by,
-                    vx: (Math.random() - 0.5) * 2 + Math.cos(t.angle) * 1.5,
-                    vy: (Math.random() - 0.5) * 2 + Math.sin(t.angle) * 1.5,
-                    color: '#FFD166',
-                    life: 15,
-                    maxLife: 15,
-                    size: 3
-                });
-            }
+            triggerAudio('cannon');
+            triggerVibrate(12);
+            GameFX.addSparks(bx, by, '#FFA502', 8);
         }
 
         function spawnTankExplosion(x, y, color) {
-            for (let i = 0; i < 28; i++) {
+            triggerAudio('explosion');
+            triggerVibrate([40, 20, 60]);
+            GameFX.shake('tankCanvas', 16, 280);
+            GameFX.addExplosion(x, y, color);
+            GameFX.addFloatText(x, y - 10, 'BOOM! 💥', color);
+            for (let i = 0; i < 24; i++) {
                 const ang = Math.random() * Math.PI * 2;
                 const spd = 1 + Math.random() * 4;
                 tankParticles.push({
@@ -2926,6 +3508,11 @@
         }
 
         function updateTankControls() {
+            // AI 陪练接管蓝方坦克
+            if (AI_MODE && !NET.active && tankCanvas) {
+                GameAI.tank(tankGuest, tankHost, tankWalls, tankCanvas.width, tankCanvas.height, () => fireBullet('guest'));
+            }
+
             [
                 { t: tankGuest, inp: tankInputs.guest },
                 { t: tankHost, inp: tankInputs.host }
@@ -3143,6 +3730,9 @@
                 tCtx.fill();
                 tCtx.globalAlpha = 1.0;
             });
+
+            // 粒子与爆炸浮层绘制
+            GameFX.draw('tankCanvas', tCtx);
         }
 
         function tankLoop() {
@@ -3359,7 +3949,7 @@
             if (targetRow === -1) return; // 该列已满
 
             c4Grid[targetRow][col] = c4CurrentTurn;
-            triggerAudio('tap');
+            triggerAudio('chip');
             renderC4Board();
 
             const winLine = checkC4Win(targetRow, col, c4CurrentTurn);
@@ -3423,6 +4013,14 @@
             c4CurrentTurn = c4CurrentTurn === 'pink' ? 'blue' : 'pink';
             updateC4TurnUI();
             netPushSnap();
+
+            if (AI_MODE && !NET.active && !c4GameOver && c4CurrentTurn === 'blue') {
+                setTimeout(() => {
+                    if (c4GameOver || c4CurrentTurn !== 'blue') return;
+                    const aiCol = GameAI.connect4(c4Grid, 'blue', 'pink');
+                    if (aiCol !== -1) dropPiece(aiCol);
+                }, 380);
+            }
         }
 
         function checkC4Win(r, c, player) {
@@ -3537,7 +4135,15 @@
                 reactionState = 'ready';
                 reactionStartTime = performance.now();
                 reactionSetPhaseUI('ready');
+                triggerAudio('tap', { freq: 880 });
                 if (NET.active) netSend({ t: 'ev', e: 'phase', v: 'ready' });
+
+                // AI 陪练：拟人反应时间 260ms ~ 380ms 抢答
+                if (AI_MODE && !NET.active) {
+                    setTimeout(() => {
+                        if (reactionState === 'ready') handleReactionTap('guest');
+                    }, 260 + Math.random() * 120);
+                }
             }, delay);
         }
 
@@ -3804,6 +4410,11 @@
         function updateSnakeGame() {
             if (!snakeGuest.alive || !snakeHost.alive) return;
 
+            // AI 模式接管蓝蛇
+            if (AI_MODE && !NET.active && snakeGuest.alive) {
+                GameAI.snake(snakeGuest, snakeHost, snakeFoods, gridCols, gridRows, (turn) => handleSnakeTurn('guest', turn, true));
+            }
+
             // 移动头部
             const newGuestHead = {
                 x: snakeGuest.body[0].x + snakeGuest.dir.x,
@@ -3882,8 +4493,10 @@
             snakeGuest.body.unshift(newGuestHead);
             const gFoodIdx = snakeFoods.findIndex(f => f.x === newGuestHead.x && f.y === newGuestHead.y);
             if (gFoodIdx !== -1) {
+                const f = snakeFoods[gFoodIdx];
                 snakeFoods.splice(gFoodIdx, 1);
-                triggerAudio('score');
+                triggerAudio('pop', { note: snakeGuest.body.length % 8 });
+                GameFX.addSparks(f.x * snakeCell + snakeCell / 2, f.y * snakeCell + snakeCell / 2, '#5E8BF0', 6);
                 triggerVibrate(20);
                 spawnSnakeFood();
             } else {
@@ -3893,8 +4506,10 @@
             snakeHost.body.unshift(newHostHead);
             const hFoodIdx = snakeFoods.findIndex(f => f.x === newHostHead.x && f.y === newHostHead.y);
             if (hFoodIdx !== -1) {
+                const f = snakeFoods[hFoodIdx];
                 snakeFoods.splice(hFoodIdx, 1);
-                triggerAudio('score');
+                triggerAudio('pop', { note: snakeHost.body.length % 8 });
+                GameFX.addSparks(f.x * snakeCell + snakeCell / 2, f.y * snakeCell + snakeCell / 2, '#FF4757', 6);
                 triggerVibrate(20);
                 spawnSnakeFood();
             } else {
@@ -3945,6 +4560,9 @@
                 sCtx.roundRect(b.x * snakeCell + 1, b.y * snakeCell + 1, snakeCell - 2, snakeCell - 2, 4);
                 sCtx.fill();
             });
+
+            // 特效粒子绘制
+            GameFX.draw('snakeCanvas', sCtx);
         }
 
         NET_HOOKS.snake = {
@@ -4195,6 +4813,11 @@
             if (!canvas || canvas.width === 0) return;
             const simulate = !(NET.active && !NET.isHost);
 
+            // AI 陪练接管蓝方 (上方球拍)
+            if (AI_MODE && !NET.active) {
+                GameAI.pingpong(ppGuestPaddle, ppBall, canvas);
+            }
+
             // 平滑移动球拍
             ppGuestPaddle.x += (ppGuestPaddle.targetX - ppGuestPaddle.x) * 0.35;
             if (simulate) ppHostPaddle.x += (ppHostPaddle.targetX - ppHostPaddle.x) * 0.35;
@@ -4215,10 +4838,12 @@
                 ppBall.x = 8 + ppBall.r;
                 ppBall.vx = -ppBall.vx;
                 triggerAudio('tap');
+                GameFX.addSparks(ppBall.x, ppBall.y, '#FFFFFF', 4);
             } else if (ppBall.x + ppBall.r >= canvas.width - 8) {
                 ppBall.x = canvas.width - 8 - ppBall.r;
                 ppBall.vx = -ppBall.vx;
                 triggerAudio('tap');
+                GameFX.addSparks(ppBall.x, ppBall.y, '#FFFFFF', 4);
             }
 
             // 碰撞检测: 蓝方球拍 (上方)
@@ -4236,7 +4861,14 @@
                 ppBall.y = ppGuestPaddle.y + ppGuestPaddle.h + ppBall.r + 1;
                 ppRally++;
                 updatePPRallyText();
-                triggerAudio('shoot');
+                triggerAudio('wood', { intensity: ppBall.speed / ppBall.maxSpeed, freq: 650 + ppRally * 18 });
+                GameFX.addSparks(ppBall.x, ppBall.y, '#00C6FF', 8);
+                if (ppBall.speed > 11) {
+                    GameFX.shake('pingpongCanvas', 6, 120);
+                }
+                if (ppRally % 5 === 0) {
+                    GameFX.addFloatText(ppBall.x, canvas.height / 2, `RALLY x${ppRally}! 🔥`, '#FFD700');
+                }
             }
 
             // 碰撞检测: 粉方球拍 (下方)
@@ -4254,14 +4886,23 @@
                 ppBall.y = ppHostPaddle.y - ppBall.r - 1;
                 ppRally++;
                 updatePPRallyText();
-                triggerAudio('shoot');
+                triggerAudio('wood', { intensity: ppBall.speed / ppBall.maxSpeed, freq: 650 + ppRally * 18 });
+                GameFX.addSparks(ppBall.x, ppBall.y, '#FF6B8B', 8);
+                if (ppBall.speed > 11) {
+                    GameFX.shake('pingpongCanvas', 6, 120);
+                }
+                if (ppRally % 5 === 0) {
+                    GameFX.addFloatText(ppBall.x, canvas.height / 2, `RALLY x${ppRally}! 🔥`, '#FFD700');
+                }
             }
 
             // 出底线得分判定
             if (ppBall.y + ppBall.r < 0) {
                 // 粉方得分
                 ppScoreHost++;
-                triggerAudio('win');
+                triggerAudio('score');
+                GameFX.shake('pingpongCanvas', 8, 180);
+                GameFX.addFloatText(canvas.width / 2, canvas.height / 2, '💖 粉方得分!', '#FF6B8B');
                 triggerFloatingHeart('screen-pingpong');
                 if (ppScoreHost >= 5) {
                     showGameResultModal({
@@ -4278,7 +4919,9 @@
             } else if (ppBall.y - ppBall.r > canvas.height) {
                 // 蓝方得分
                 ppScoreGuest++;
-                triggerAudio('win');
+                triggerAudio('score');
+                GameFX.shake('pingpongCanvas', 8, 180);
+                GameFX.addFloatText(canvas.width / 2, canvas.height / 2, '💙 蓝方得分!', '#00C6FF');
                 triggerFloatingHeart('screen-pingpong');
                 if (ppScoreGuest >= 5) {
                     showGameResultModal({
@@ -4286,7 +4929,7 @@
                         winner: 'guest',
                         winnerText: '蓝方斩获胜利',
                         scoreText: `${ppScoreGuest} : ${ppScoreHost}`,
-                        subtitle: '速度与旋转的完美结合！',
+                        subtitle: '反应如电，压制全场！',
                         onRestart: resetPingPongGame
                     });
                 } else {
@@ -4359,15 +5002,29 @@
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
+            // 乒乓球地面投影 (带来 2.5D 高度纵深感)
+            const ballCenterDist = Math.abs(ppBall.y - h / 2) / (h / 2);
+            const ballShadowW = ppBall.r * (1.2 + ballCenterDist * 0.4);
+            const ballShadowH = ppBall.r * 0.5;
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+            ctx.beginPath();
+            ctx.ellipse(ppBall.x + 4, ppBall.y + 10, ballShadowW, ballShadowH, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
             // 乒乓球本体与发光拖尾
             ctx.save();
             ctx.shadowColor = '#FFFA65';
-            ctx.shadowBlur = 12;
+            ctx.shadowBlur = 14;
             ctx.fillStyle = '#FFFFFF';
             ctx.beginPath();
             ctx.arc(ppBall.x, ppBall.y, ppBall.r, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
+
+            // 渲染全屏粒子与浮动文字
+            GameFX.draw('pingpongCanvas', ctx);
         }
 
         NET_HOOKS.pingpong = {
@@ -4536,6 +5193,11 @@
             if (!canvas || canvas.width === 0) return;
             const simulate = !(NET.active && !NET.isHost);
 
+            // AI 陪练接管蓝方网球拍 (上方)
+            if (AI_MODE && !NET.active) {
+                GameAI.tennis(tnGuest, tnBall, canvas);
+            }
+
             tnGuest.x += (tnGuest.targetX - tnGuest.x) * 0.35;
             if (simulate) tnHost.x += (tnHost.targetX - tnHost.x) * 0.35;
 
@@ -4553,10 +5215,12 @@
                 tnBall.x = 12 + tnBall.r;
                 tnBall.vx = -tnBall.vx;
                 triggerAudio('tap');
+                GameFX.addSparks(tnBall.x, tnBall.y, '#D4FF00', 4);
             } else if (tnBall.x + tnBall.r >= canvas.width - 12) {
                 tnBall.x = canvas.width - 12 - tnBall.r;
                 tnBall.vx = -tnBall.vx;
                 triggerAudio('tap');
+                GameFX.addSparks(tnBall.x, tnBall.y, '#D4FF00', 4);
             }
 
             // 击球: 蓝方网球拍 (上方)
@@ -4574,7 +5238,12 @@
                 tnBall.y = tnGuest.y + tnRacketH + tnBall.r + 1;
                 tnRally++;
                 updateTennisRallyText();
-                triggerAudio('shoot');
+                triggerAudio('tennis', { power: tnBall.speed / tnBall.maxSpeed });
+                GameFX.addSparks(tnBall.x, tnBall.y, '#00C9FF', 10);
+                if (tnBall.speed > 12) {
+                    GameFX.shake('tennisCanvas', 8, 140);
+                    GameFX.addFloatText(tnBall.x, canvas.height / 2, 'SMASH! ⚡', '#D4FF00');
+                }
             }
 
             // 击球: 粉方网球拍 (下方)
@@ -4592,13 +5261,20 @@
                 tnBall.y = tnHost.y - tnBall.r - 1;
                 tnRally++;
                 updateTennisRallyText();
-                triggerAudio('shoot');
+                triggerAudio('tennis', { power: tnBall.speed / tnBall.maxSpeed });
+                GameFX.addSparks(tnBall.x, tnBall.y, '#FF416C', 10);
+                if (tnBall.speed > 12) {
+                    GameFX.shake('tennisCanvas', 8, 140);
+                    GameFX.addFloatText(tnBall.x, canvas.height / 2, 'SMASH! ⚡', '#D4FF00');
+                }
             }
 
             // 底线得分
             if (tnBall.y + tnBall.r < 0) {
                 tnScoreHost++;
-                triggerAudio('win');
+                triggerAudio('score');
+                GameFX.shake('tennisCanvas', 10, 200);
+                GameFX.addFloatText(canvas.width / 2, canvas.height / 2, 'ACE! 💖 粉方得分', '#FF416C');
                 triggerFloatingHeart('screen-tennis');
                 if (tnScoreHost >= 5) {
                     showGameResultModal({
@@ -4614,7 +5290,9 @@
                 }
             } else if (tnBall.y - tnBall.r > canvas.height) {
                 tnScoreGuest++;
-                triggerAudio('win');
+                triggerAudio('score');
+                GameFX.shake('tennisCanvas', 10, 200);
+                GameFX.addFloatText(canvas.width / 2, canvas.height / 2, 'ACE! 💙 蓝方得分', '#00C9FF');
                 triggerFloatingHeart('screen-tennis');
                 if (tnScoreGuest >= 5) {
                     showGameResultModal({
@@ -4711,10 +5389,18 @@
             ctx.lineWidth = 2;
             ctx.stroke();
 
+            // 网球地面草坪椭圆阴影
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 40, 0, 0.4)';
+            ctx.beginPath();
+            ctx.ellipse(tnBall.x + 5, tnBall.y + 12, tnBall.r * 1.3, tnBall.r * 0.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
             // 黄绿色毛毡网球
             ctx.save();
             ctx.shadowColor = '#CCFF00';
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 12;
             ctx.fillStyle = '#D4FF00';
             ctx.beginPath();
             ctx.arc(tnBall.x, tnBall.y, tnBall.r, 0, Math.PI * 2);
@@ -4726,6 +5412,9 @@
             ctx.arc(tnBall.x - 3, tnBall.y, tnBall.r - 2, -Math.PI / 2, Math.PI / 2);
             ctx.stroke();
             ctx.restore();
+
+            // 渲染全屏粒子与浮动文字
+            GameFX.draw('tennisCanvas', ctx);
         }
         NET_HOOKS.tennis = {
             stream: true,
@@ -4852,6 +5541,7 @@
                 gomCtx.arc(gomCell * (gomLast[1] + 1), gomCell * (gomLast[0] + 1), gomCell * 0.2, 0, Math.PI * 2);
                 gomCtx.stroke();
             }
+            GameFX.draw('gomokuCanvas', gomCtx);
         }
 
         function gomCheckWin(r, c, v) {
@@ -4886,7 +5576,10 @@
             const v = gomTurn === 'pink' ? 1 : 2;
             gomGrid[r][c] = v;
             gomLast = [r, c];
-            triggerAudio('tap');
+            triggerAudio('stone');
+            if (gomCell) {
+                GameFX.addShockwave(gomCell * (c + 1), gomCell * (r + 1), v === 1 ? 'rgba(30,30,30,0.4)' : 'rgba(255,255,255,0.8)', gomCell * 0.85);
+            }
             renderGomoku();
             if (NET.active) netPushSnap();
             if (gomCheckWin(r, c, v)) {
@@ -4905,6 +5598,15 @@
             }
             gomTurn = gomTurn === 'pink' ? 'blue' : 'pink';
             updateGomokuTurn();
+
+            // AI 陪练落子
+            if (AI_MODE && !NET.active && !gomOver && gomTurn === 'blue') {
+                setTimeout(() => {
+                    if (gomOver || gomTurn !== 'blue') return;
+                    const aiMove = GameAI.gomoku(gomGrid, 2);
+                    if (aiMove) gomPlace(aiMove[0], aiMove[1]);
+                }, 320);
+            }
         }
 
         function gomokuTapAt(px, py) {
@@ -5052,6 +5754,7 @@
                     }
                 }
             }
+            GameFX.draw('reversiCanvas', rvCtx);
         }
 
         function rvAdvanceTurn() {
@@ -5080,7 +5783,10 @@
             const v = rvTurn === 'pink' ? 1 : 2;
             rvGrid[r][c] = v;
             mv.flips.forEach(([fr, fc]) => { rvGrid[fr][fc] = v; });
-            triggerAudio('tap');
+            triggerAudio('stone');
+            if (rvCell) {
+                GameFX.addShockwave(c * rvCell + rvCell / 2, r * rvCell + rvCell / 2, v === 1 ? 'rgba(30,30,30,0.4)' : 'rgba(255,255,255,0.8)', rvCell * 0.9);
+            }
             rvAdvanceTurn();
             renderReversi();
             updateReversiCounts();
@@ -5091,6 +5797,16 @@
                 const wSide = black > white ? 'pink' : (white > black ? 'blue' : 'draw');
                 showReversiResult(wSide, black, white);
                 if (NET.active) netSend({ t: 'ev', e: 'over', v: { w: wSide, b: black, wh: white } });
+                return true;
+            }
+
+            // AI 陪练自动行棋
+            if (AI_MODE && !NET.active && !rvOver && rvTurn === 'blue') {
+                setTimeout(() => {
+                    if (rvOver || rvTurn !== 'blue') return;
+                    const aiMove = GameAI.reversi(rvGrid, 2);
+                    if (aiMove) rvPlace(aiMove[0], aiMove[1]);
+                }, 350);
             }
             return true;
         }
@@ -5228,6 +5944,8 @@
                     dtCtx.fill();
                 }
             }
+            // 圈地特效绘制
+            GameFX.draw('dotsCanvas', dtCtx);
         }
 
         function dtDistToSeg(px, py, x1, y1, x2, y2) {
@@ -5302,8 +6020,10 @@
             if (NET.active) netPushSnap();
 
             if (completed) {
-                triggerAudio('score');
+                triggerAudio('pop', { note: (dtHostScore + dtGuestScore) % 8 });
                 triggerVibrate(20);
+                const dotMid = dtDotPos(r, c);
+                GameFX.addSparks(dotMid.x, dotMid.y, ownerVal === 1 ? '#FF3B69' : '#5E8BF0', 8);
             }
 
             // 终局判定
@@ -5319,6 +6039,15 @@
             if (!completed) {
                 dtTurn = dtTurn === 'pink' ? 'blue' : 'pink';
                 updateDotsUI();
+
+                // AI 陪练模式：轮到蓝方时自动寻找最优划线
+                if (AI_MODE && !NET.active && !dtOver && dtTurn === 'blue') {
+                    setTimeout(() => {
+                        if (dtOver || dtTurn !== 'blue') return;
+                        const edge = GameAI.dots(dtH, dtV, dtBox, DT_N);
+                        if (edge) dtApplyEdge(edge.o, edge.r, edge.c);
+                    }, 350);
+                }
             }
             return true;
         }
@@ -5638,6 +6367,11 @@
             const Rp = ahPuckR * ahSC;
             const maxSpd = 24 * ahSC;
 
+            // AI 陪练接管蓝方击球手
+            if (AI_MODE && !NET.active) {
+                GameAI.airhockey(ahGuestM, ahPuck, { width: ahW, height: ahH });
+            }
+
             // 冰球摩擦与速度上限
             ahPuck.vx *= 0.994;
             ahPuck.vy *= 0.994;
@@ -5650,11 +6384,29 @@
 
             // 墙壁反弹（球门开口除外）
             const goalL = ahW * 0.3, goalR = ahW * 0.7;
-            if (ahPuck.x - Rp < 8) { ahPuck.x = 8 + Rp; ahPuck.vx = Math.abs(ahPuck.vx) * 0.92; }
-            if (ahPuck.x + Rp > ahW - 8) { ahPuck.x = ahW - 8 - Rp; ahPuck.vx = -Math.abs(ahPuck.vx) * 0.92; }
+            if (ahPuck.x - Rp < 8) {
+                ahPuck.x = 8 + Rp;
+                ahPuck.vx = Math.abs(ahPuck.vx) * 0.92;
+                triggerAudio('tap');
+                GameFX.addSparks(ahPuck.x, ahPuck.y, '#00C9FF', 4);
+            }
+            if (ahPuck.x + Rp > ahW - 8) {
+                ahPuck.x = ahW - 8 - Rp;
+                ahPuck.vx = -Math.abs(ahPuck.vx) * 0.92;
+                triggerAudio('tap');
+                GameFX.addSparks(ahPuck.x, ahPuck.y, '#FF416C', 4);
+            }
             const inGoalX = ahPuck.x > goalL && ahPuck.x < goalR;
-            if (ahPuck.y - Rp < 8 && !inGoalX) { ahPuck.y = 8 + Rp; ahPuck.vy = Math.abs(ahPuck.vy) * 0.92; }
-            if (ahPuck.y + Rp > ahH - 8 && !inGoalX) { ahPuck.y = ahH - 8 - Rp; ahPuck.vy = -Math.abs(ahPuck.vy) * 0.92; }
+            if (ahPuck.y - Rp < 8 && !inGoalX) {
+                ahPuck.y = 8 + Rp;
+                ahPuck.vy = Math.abs(ahPuck.vy) * 0.92;
+                triggerAudio('tap');
+            }
+            if (ahPuck.y + Rp > ahH - 8 && !inGoalX) {
+                ahPuck.y = ahH - 8 - Rp;
+                ahPuck.vy = -Math.abs(ahPuck.vy) * 0.92;
+                triggerAudio('tap');
+            }
 
             // 球门得分
             if (ahPuck.y + Rp < 6 && inGoalX) { ahScoreHost++; airHockeyGoal(true); return; }
@@ -5676,8 +6428,13 @@
                     const impact = Math.max(7, Math.hypot(mvx, mvy) * 1.15);
                     ahPuck.vx = nx * impact + mvx * 0.55;
                     ahPuck.vy = ny * impact + mvy * 0.55;
-                    triggerAudio('shoot');
+                    triggerAudio('puck', { power: Math.min(1, impact / maxSpd) });
                     triggerVibrate(15);
+                    GameFX.addSparks(ahPuck.x, ahPuck.y, '#FFFFFF', 8);
+                    if (impact > 14) {
+                        GameFX.shake('airhockeyCanvas', 6, 120);
+                        GameFX.addFloatText(ahPuck.x, ahPuck.y, 'SMACK! 💥', '#FF9F43');
+                    }
                 }
                 m.px = m.x;
                 m.py = m.y;
@@ -5685,7 +6442,9 @@
         }
 
         function airHockeyGoal(hostScored) {
-            triggerAudio('win');
+            triggerAudio('score');
+            GameFX.shake('airhockeyCanvas', 14, 250);
+            GameFX.addFloatText(ahW / 2, ahH / 2, hostScored ? 'GOAL!! 💖 粉方得分' : 'GOAL!! 💙 蓝方得分', hostScored ? '#FF416C' : '#00C9FF');
             triggerFloatingHeart('screen-airhockey');
             updateAirHockeyScores();
             if (ahScoreHost >= 7 || ahScoreGuest >= 7) {
@@ -5751,6 +6510,9 @@
             ctx.arc(ahPuck.x, ahPuck.y, ahPuckR * ahSC, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
+
+            // 粒子与浮动文字绘制
+            GameFX.draw('airhockeyCanvas', ctx);
         }
 
         function loopAirHockey() {
@@ -5928,6 +6690,11 @@
             if (boBall.x - boBall.r < 8) { boBall.x = 8 + boBall.r; boBall.vx = Math.abs(boBall.vx); }
             if (boBall.x + boBall.r > boW - 8) { boBall.x = boW - 8 - boBall.r; boBall.vx = -Math.abs(boBall.vx); }
 
+            // AI 模式接管蓝方挡板
+            if (AI_MODE && !NET.active) {
+                GameAI.breakout(boGuestPaddle, boBall, boW);
+            }
+
             // 球拍碰撞
             const bouncePaddle = (paddle, dirUp) => {
                 if (dirUp && boBall.vy > 0) return; // 只在球朝向拍面时反弹
@@ -5940,7 +6707,8 @@
                     boBall.vx = Math.sin(ang) * speed;
                     boBall.vy = (dirUp ? -1 : 1) * Math.cos(ang) * speed;
                     boBall.y = dirUp ? paddle.y - boBall.r - 1 : paddle.y + ph + boBall.r + 1;
-                    triggerAudio('shoot');
+                    triggerAudio('puck', { power: 0.8 });
+                    GameFX.addSparks(boBall.x, boBall.y, '#FFFA65', 5);
                 }
             };
             bouncePaddle(boGuestPaddle, true);
@@ -5954,8 +6722,11 @@
                         boBall.y + boBall.r > b.y && boBall.y - boBall.r < b.y + b.h) {
                         b.alive = false;
                         boBall.vy = -boBall.vy;
-                        triggerAudio('tap');
-                        triggerVibrate(12);
+                        const brokenCount = isGuestBrick ? boScoreHost : boScoreGuest;
+                        triggerAudio('brick', { pitch: 1 + (brokenCount % 12) * 0.08 });
+                        GameFX.addSparks(b.x + b.w / 2, b.y + b.h / 2, isGuestBrick ? '#5E8BF0' : '#FF6B8B', 10);
+                        GameFX.shake('breakoutCanvas', 4, 80);
+                        triggerVibrate(14);
                         if (isGuestBrick) { boScoreHost++; } else { boScoreGuest++; }
                         updateBreakoutScores();
                         break;
@@ -6019,6 +6790,9 @@
             ctx.arc(boBall.x, boBall.y, boBall.r, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
+
+            // 碎砖碎片与撞击火花
+            GameFX.draw('breakoutCanvas', ctx);
         }
 
         function loopBreakout() {
@@ -6425,8 +7199,10 @@
             }));
             // 消行
             let cleared = 0;
+            const clearedRows = [];
             for (let r = TT_H - 1; r >= 0; r--) {
                 if (well.grid[r].every(v => v !== 0)) {
+                    clearedRows.push(r);
                     well.grid.splice(r, 1);
                     well.grid.unshift(Array(TT_W).fill(0));
                     cleared++;
@@ -6436,6 +7212,16 @@
             if (cleared) {
                 well.score += cleared * 10;
                 triggerAudio('score');
+                const targetCanvasId = well === ttWells.host ? 'tetrisHostCanvas' : 'tetrisGuestCanvas';
+                GameFX.shake(targetCanvasId, 4 * cleared, 100);
+                clearedRows.forEach(rowY => {
+                    GameFX.addSparks((TT_W / 2) * ttCell, rowY * ttCell, '#FFFA65', 8);
+                });
+                if (cleared >= 4) {
+                    GameFX.addFloatText(ttCell * 2, ttCell * 5, 'TETRIS! 💥', '#FF3B69');
+                } else if (cleared >= 2) {
+                    GameFX.addFloatText(ttCell * 2, ttCell * 5, `COMBO x${cleared}!`, '#5E8BF0');
+                }
                 triggerVibrate(25);
                 document.getElementById('tetrisHostScore').innerText = ttWells.host.score;
                 document.getElementById('tetrisGuestScore').innerText = ttWells.guest.score;
@@ -6533,6 +7319,11 @@
             ttLastT = now;
             const simulate = !(NET.active && !NET.isHost);
             if (simulate) {
+                // AI 模式自动下落蓝方
+                if (AI_MODE && !ttWells.guest.over && ttWells.guest.piece && Math.random() < 0.12) {
+                    GameAI.tetris(ttWells.guest);
+                }
+
                 ttAccum += dt;
                 const interval = 520;
                 while (ttAccum > interval) {
@@ -6568,11 +7359,28 @@
                 ctx.fill();
             };
             well.grid.forEach((row, r) => row.forEach((v, c) => { if (v) drawCell(c, r, v); }));
+
+            // 幽灵方块投影 (Ghost Piece)
             if (well.piece) {
+                let ghostY = well.piece.y;
+                while (!ttCollides(well.grid, { ...well.piece, y: ghostY + 1 })) ghostY++;
+                if (ghostY > well.piece.y) {
+                    ctx.save();
+                    ctx.globalAlpha = 0.22;
+                    well.piece.sh.forEach((row, r) => row.forEach((v, c) => {
+                        if (v && ghostY + r >= 0) drawCell(well.piece.x + c, ghostY + r, well.piece.ci + 1);
+                    }));
+                    ctx.restore();
+                }
+
+                // 实体下落方块
                 well.piece.sh.forEach((row, r) => row.forEach((v, c) => {
                     if (v && well.piece.y + r >= 0) drawCell(well.piece.x + c, well.piece.y + r, well.piece.ci + 1);
                 }));
             }
+
+            // 特效层
+            GameFX.draw(canvas.id, ctx);
         }
 
         function renderTetris() {
@@ -7097,6 +7905,12 @@
 
         function mzStep() {
             if (mzOver || !mzPlayers) return;
+
+            // AI 陪练：单人模式自动控制蓝方
+            if (AI_MODE && !NET.active && mzPlayers.blue) {
+                GameAI.maze(mzPlayers.blue, mzGrid, MZ_W, MZ_H);
+            }
+
             ['pink', 'blue'].forEach(side => {
                 if (NET.active && side !== mzMySide()) return; // 联机：只推进自己的棋子
                 const p = mzPlayers[side];
@@ -7227,6 +8041,8 @@
             ctx.fillStyle = 'rgba(255,255,255,0.9)';
             ctx.fillRect(0, H / 2 - 2, W, 4);
             mzRenderRegion(ctx, 0, H / 2, W, H / 2, 'pink');
+            // 特效渲染
+            GameFX.draw('mazeCanvas', ctx);
         }
 
         NET_HOOKS.maze = {
