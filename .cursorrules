@@ -1,0 +1,11 @@
+# Cursor AI Rules
+
+# Canonical Constitution Reference
+# All rules are defined in and synchronized from AGENTS.md.
+# Read AGENTS.md before making structural changes.
+
+- Stack: HTML5/Canvas/Tailwind (Web) + SwiftUI/SPM (Native).
+- Crucial: Always mirror changes from `index.html` to `preview.html`.
+- Mobile UX: Safe-area insets, multi-touch isolation, zero default scrolling during gameplay.
+- Do not introduce heavy bundlers (Vite/Webpack) or external backends unless explicitly requested.
+- Update `PROJECT_STATUS.md` and `HANDOFF.md` on task completion.
