@@ -748,7 +748,7 @@
             display: block;
             touch-action: none;
         }
-        .sports-rally-badge {
+        .pingpong-rally-badge, .sports-rally-badge {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -764,6 +764,21 @@
             letter-spacing: 1px;
             pointer-events: none;
             z-index: 10;
+        }
+        .sports-smash-overlay {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            font-size: 28px;
+            font-weight: 900;
+            color: #FFE57F;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 20;
+            letter-spacing: 2px;
         }
 
         /* 6. 双人草地网球 (Grand Slam Tennis) 样式 */
@@ -1903,17 +1918,36 @@
                     low.connect(gain); high.connect(gain); gain.connect(ctx.destination);
                     low.start(now); high.start(now); low.stop(now + 0.08); high.stop(now + 0.08);
                 } else if (type === 'tennis' || type === 'racket') {
-                    // 网球网面破空抽击
+                    // 网球网面抽击与暴击扣杀 (支持根据 power 动态强化重音与扫频衰减)
+                    const p = Math.max(0.1, Math.min(1.0, (opts.power || 0.4)));
+                    const isSmash = p >= 0.85 || opts.smash;
+                    
                     const osc = ctx.createOscillator();
                     const gain = ctx.createGain();
-                    osc.type = 'triangle';
-                    const freq = 480 + Math.random() * 80;
-                    osc.frequency.setValueAtTime(freq, now);
-                    osc.frequency.exponentialRampToValueAtTime(120, now + 0.12);
-                    gain.gain.setValueAtTime(0.25, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                    osc.type = isSmash ? 'sawtooth' : 'triangle';
+                    const startFreq = (opts.freq || (isSmash ? 580 : 460)) + Math.random() * 50;
+                    osc.frequency.setValueAtTime(startFreq, now);
+                    osc.frequency.exponentialRampToValueAtTime(isSmash ? 90 : 120, now + (isSmash ? 0.16 : 0.12));
+                    
+                    const peakVol = Math.min(0.4, 0.18 + p * 0.2);
+                    gain.gain.setValueAtTime(peakVol, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + (isSmash ? 0.16 : 0.12));
                     osc.connect(gain); gain.connect(ctx.destination);
-                    osc.start(now); osc.stop(now + 0.12);
+                    osc.start(now); osc.stop(now + (isSmash ? 0.16 : 0.12));
+
+                    // 扣杀重音附带低频冲击波体感
+                    if (isSmash) {
+                        const subOsc = ctx.createOscillator();
+                        const subGain = ctx.createGain();
+                        subOsc.type = 'sine';
+                        subOsc.frequency.setValueAtTime(140, now);
+                        subOsc.frequency.exponentialRampToValueAtTime(35, now + 0.14);
+                        subGain.gain.setValueAtTime(0.26, now);
+                        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+                        subOsc.connect(subGain); subGain.connect(ctx.destination);
+                        subOsc.start(now); subOsc.stop(now + 0.14);
+                        triggerVibrate(35);
+                    }
                 } else if (type === 'puck') {
                     // 冰球硬质金属碰撞声
                     const osc = ctx.createOscillator();
@@ -5238,9 +5272,11 @@
                 tnBall.y = tnGuest.y + tnRacketH + tnBall.r + 1;
                 tnRally++;
                 updateTennisRallyText();
-                triggerAudio('tennis', { power: tnBall.speed / tnBall.maxSpeed });
+                const tnPower = tnBall.speed / tnBall.maxSpeed;
+                const isSmashHit = tnBall.speed > 12;
+                triggerAudio('tennis', { power: tnPower, smash: isSmashHit });
                 GameFX.addSparks(tnBall.x, tnBall.y, '#00C9FF', 10);
-                if (tnBall.speed > 12) {
+                if (isSmashHit) {
                     GameFX.shake('tennisCanvas', 8, 140);
                     GameFX.addFloatText(tnBall.x, canvas.height / 2, 'SMASH! ⚡', '#D4FF00');
                 }
@@ -5261,9 +5297,11 @@
                 tnBall.y = tnHost.y - tnBall.r - 1;
                 tnRally++;
                 updateTennisRallyText();
-                triggerAudio('tennis', { power: tnBall.speed / tnBall.maxSpeed });
+                const tnPower = tnBall.speed / tnBall.maxSpeed;
+                const isSmashHit = tnBall.speed > 12;
+                triggerAudio('tennis', { power: tnPower, smash: isSmashHit });
                 GameFX.addSparks(tnBall.x, tnBall.y, '#FF416C', 10);
-                if (tnBall.speed > 12) {
+                if (isSmashHit) {
                     GameFX.shake('tennisCanvas', 8, 140);
                     GameFX.addFloatText(tnBall.x, canvas.height / 2, 'SMASH! ⚡', '#D4FF00');
                 }
