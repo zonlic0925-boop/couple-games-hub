@@ -1,11 +1,27 @@
 # Agent 任务交接文档 (Handoff)
 
 > 交接日期: 2026-09-04  
-> 当前版本: v2.4.0 (DualCourt 3D 乒乓/网球 PRD 交付 + DuoDash 3D + 21 游戏矩阵)
+> 当前版本: v2.4.1 (iPhone 安全区退出按钮修复 + DualCourt 3D 乒乓/网球 PRD 交付 + DuoDash 3D + 21 游戏矩阵)
 
 ---
 
-## 1. 刚刚完成的核心工作（本轮：DualCourt 3D，按 PRD 交付）
+## 0. 本轮新完成：iPhone 灵动岛遮挡退出按钮修复
+
+**用户反馈**：乒乓与网球在 iPhone 上可玩，但退出按钮被挡住无法退出。
+
+**根因（因果链）**：`viewport-fit=cover` 使 `.game-screen` 铺满物理屏幕顶端 → iPhone 顶部 ~59px 为灵动岛/状态栏区域 → 项目内其他游戏均有 `calc(env(safe-area-inset-top) + Npx)` 顶部安全区，唯独 DualCourt 重构引入的乒乓/网球顶栏只写了 `padding:10px 16px` → 退出按钮恰好落在灵动岛下方不可见/不可点。
+
+**修复范围（同类缺陷一次修全）**：
+1. `index.html` 乒乓顶栏（`#screen-pingpong`）：`padding:calc(env(safe-area-inset-top, 20px) + 10px) 16px 10px`。
+2. `index.html` 网球顶栏（`#screen-tennis`）：同上。
+3. `#screen-connect4`（同类隐患）：补安全区 padding（顶+底）+ `flex-direction: column`（此前 flex row 下三块子元素横向挤压）。
+4. `#screen-reaction`（同类隐患）：两个浮动按钮 `top:12px` → `top:calc(env(safe-area-inset-top, 20px) + 12px)`。
+
+**验证（393×852 iPhone 14 Pro 视口 + 模拟灵动岛 59px）**：乒乓/网球退出按钮顶 69px（=59+10，完全避开灵动岛）；点击退出后正确回到大厅（乒乓/网球双向闭环）；四子棋 column 布局棋盘正常可见；反应王按钮位置正确；画布 flex:1 自动收缩无副作用。`index.html`/`preview.html` diff 一致。
+
+---
+
+## 1. 刚刚完成的核心工作（DualCourt 3D，按 PRD 交付）
 
 1. **按《DualCourt 3D》PRD 完整重构「乒乓」与「网球」两游戏**（PRD 技术栈条款 Unity/Godot 与项目宪法单文件 Web 约束冲突，取 Web 交付硬约束，玩法层全量用 Canvas 透视投影自研实现）：
    - **DC3D 共享微引擎**：透视投影（yaw/pitch/fov，近大远小+深度剔除）、世界空间 poly/line/ball/groundEllipse、`dcSolveShot` 抛物线反解（迭代保证过网净高 + 马格努斯下坠补偿）、`dcStepBall` 空气动力学积分（重力+二次阻力+马格努斯：上旋下坠/侧旋拐弯，网球横向系数 kmy 衰减防失控）。

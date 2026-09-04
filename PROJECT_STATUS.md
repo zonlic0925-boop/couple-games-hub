@@ -1,6 +1,6 @@
 # 项目实时状态看板 (Project Status)
 
-> 最后更新时间: 2026-09-04 (DualCourt 3D 轮次)  
+> 最后更新时间: 2026-09-04 (iPhone 安全区退出按钮修复轮次)  
 > 状态级别: 🟢 生产就绪 (Production Ready - High Quality Polish)
 
 ---
@@ -16,7 +16,7 @@
 | **GameFX 特效引擎** | 🟢 完备 | 画布屏幕微震 (ScreenShake)、物理火花粒子爆发、水波纹扩散、浮动连击大字 |
 | **GameAudio 真实合成音效** | 🟢 完备 | 木质清脆回弹、网面抽击破空、金属击打、重低音炮火震荡、围棋玉石落子、连击上升音阶 + DualCourt 新增挥拍破风/擦网闷响/场地弹跳 |
 | **GameAI 智能算法库** | 🟢 完备 | 乒乓/网球/冰球/坦克/五子棋/黑白棋/四子棋/打砖块/贪吃蛇/方块/迷宫/跑酷专属对战算法 |
-| **PWA 与桌面/移动双端适配** | 🟢 完备 | iPhone (Safe-Area)、iPad (响应式全屏/多列网格)、PC 端自适应居中模拟器 |
+| **PWA 与桌面/移动双端适配** | 🟢 完备 | iPhone (Safe-Area 全游戏覆盖含 DualCourt/四子棋/反应王)、iPad (响应式全屏/多列网格)、PC 端自适应居中模拟器 |
 | **自动化测试** | 🟢 100% 通过 | `test_games.js` 全量通过 (153/153 测试项，含 DualCourt 投影/滑动分析/挥拍反解/90 帧物理有限性回归 + DuoDash 专项) |
 | **联机通信与状态同步** | 🟢 已修复增强 | 微型坦克等联机对战双端双向移动/摇杆控制指令无缝传输无死锁；DualCourt 快照含球体三维速度与旋转、发球权、相持阶段 |
 | **生产部署** | 🟢 已上线 | Vercel 生产部署 + GitHub Pages 备用部署 |
@@ -29,6 +29,7 @@
 2. **`showGlobalToast` 未定义**：模式切换/AI 提示与 DualCourt 场地切换提示调用了一个从未定义的函数；已补全局别名（复用 `netShowToast` + `#globalToast`）。
 3. **乒乓/网球物理引擎常数大小写错配**：`dcStepBall` 曾读 `cfg.kd/cfg.km` 小写而引擎定义 `KD/KM`，导致积分即 NaN 并经 `dcClamp` 污染球拍坐标（NaN 比较恒 false 直接透传）；修复为大小写兼容 + NaN 熔断（`Number.isFinite` 逐字段）+ 主循环 try/catch 单帧保护。
 4. **duodash 种子确定性**（协同轮次）：左右跑道改为每物件独立 `mulberry32(seed + idx*7919)` 流，联机两端确定性一致。
+5. **iPhone 灵动岛遮挡退出按钮**（本轮）：DualCourt 乒乓/网球顶栏、四子棋屏幕、反应王浮动按钮此前无 Safe-Area 顶部内边距，`viewport-fit=cover` 下被灵动岛/状态栏压住无法退出；统一补 `calc(env(safe-area-inset-top, 20px) + Npx)`（四子棋并补 flex column + 底部安全区），已在 393×852 模拟灵动岛 59px 下实测按钮顶 69px 且退出闭环成功。
 
 ---
 
