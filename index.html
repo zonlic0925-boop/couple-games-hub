@@ -22,10 +22,18 @@
         :root {
             --pink-main: #FF6B8B;
             --pink-soft: #FFA8BA;
+            --pink-deep: #E84E74;
+            --violet-soft: #A78BFA;
             --blue-main: #6C92F4;
             --blue-soft: #A3BCF9;
             --text-dark: #2C2C2E;
             --text-muted: #8E8E93;
+            --ink: #26202B;
+            --ink-soft: #6F5F6B;
+            --ink-faint: #A3929E;
+            --card-bg: rgba(255, 253, 252, 0.94);
+            --rose-wash: rgba(255, 107, 139, 0.14);
+            --shadow-rose: rgba(214, 98, 130, 0.16);
         }
 
         * {
@@ -43,6 +51,7 @@
             overflow: hidden;
             background: #15161E;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* 移动端全屏铺满，桌面端展示模拟手机 */
@@ -74,7 +83,6 @@
                 border: 8px solid #2C2C2E;
             }
         }
-
         /* 平板 / 大屏响应式：大厅卡片网格化 */
         @media (min-width: 700px) {
             #lobby-view { align-items: center; }
@@ -93,6 +101,7 @@
                 padding-right: 18px;
             }
             .header-title { font-size: 30px; }
+            .header-logo { width: 46px; height: 46px; font-size: 25px; }
             .header-subtitle { font-size: 15px; }
         }
 
@@ -103,168 +112,260 @@
             .game-list { grid-template-columns: repeat(3, 1fr); }
         }
 
-        /* 大厅界面 */
+        /* 大厅界面 (暖粉氛围 + 光斑层次) */
         #lobby-view {
             width: 100%;
             height: 100%;
             display: flex;
             flex-direction: column;
-            background: linear-gradient(180deg, #FFF0F4 0%, #FFFFFF 35%, #F8FAFF 100%);
-            padding: calc(env(safe-area-inset-top, 20px) + 12px) 18px calc(env(safe-area-inset-bottom, 20px) + 12px);
+            background:
+                radial-gradient(560px 340px at 92% -6%, rgba(255, 171, 190, 0.5) 0%, rgba(255, 171, 190, 0) 60%),
+                radial-gradient(460px 320px at -10% 22%, rgba(255, 210, 224, 0.6) 0%, rgba(255, 210, 224, 0) 55%),
+                radial-gradient(520px 380px at 110% 60%, rgba(224, 208, 255, 0.45) 0%, rgba(224, 208, 255, 0) 60%),
+                linear-gradient(175deg, #FFF1F5 0%, #FFF9F6 46%, #FBF6FF 100%);
+            padding: calc(env(safe-area-inset-top, 20px) + 14px) 18px calc(env(safe-area-inset-bottom, 20px) + 12px);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             z-index: 10;
         }
 
         .header {
-            text-align: center;
-            margin-bottom: 12px;
+            text-align: left;
+            margin-bottom: 16px;
         }
 
-        .header-title {
-            font-size: 24px;
-            font-weight: 900;
-            color: var(--text-dark);
+        .header-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            font-size: 23px;
+            background: linear-gradient(145deg, #FF8DA5, #FF5F84);
+            box-shadow: 0 8px 18px rgba(232, 78, 116, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+            flex-shrink: 0;
+        }
+
+        .header-title {
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: -0.4px;
+            color: var(--ink);
+            line-height: 1.1;
         }
 
         .header-subtitle {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 4px;
+            font-size: 12.5px;
+            color: var(--ink-soft);
+            margin-top: 6px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 107, 139, 0.1);
-            color: var(--pink-main);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            color: var(--ink-soft);
+            padding: 5px 11px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            box-shadow: 0 3px 12px rgba(196, 96, 124, 0.1);
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
-            background: #34C759;
-            box-shadow: 0 0 8px #34C759;
+            background: #FF8BA0;
+            box-shadow: 0 0 0 3px rgba(255, 107, 139, 0.16);
         }
 
-        /* 分类切换 */
+        /* 分类切换 (毛玻璃胶囊) */
         .category-scroll {
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding: 8px 0 12px;
+            padding: 2px 0 14px;
             scrollbar-width: none;
         }
         .category-scroll::-webkit-scrollbar { display: none; }
 
         .category-chip {
             flex-shrink: 0;
-            padding: 7px 14px;
-            background: #F2F2F7;
-            border-radius: 18px;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 999px;
             font-size: 13px;
             font-weight: 600;
-            color: var(--text-muted);
+            color: var(--ink-soft);
             cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.2s ease;
         }
-
+        .category-chip:active {
+            transform: scale(0.95);
+        }
         .category-chip.active {
-            background: var(--pink-main);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(255, 107, 139, 0.3);
+            background: linear-gradient(145deg, #FF7C98, #FF5C83);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 6px 16px rgba(232, 78, 116, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+        @media (hover: hover) and (pointer: fine) {
+            .category-chip:not(.active):hover {
+                background: rgba(255, 255, 255, 0.96);
+                color: var(--ink);
+            }
         }
 
-        /* 游戏列表卡片 */
+        /* 游戏列表卡片 (暖调悬浮质感) */
         .game-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            padding-bottom: 20px;
+            gap: 10px;
+            padding-bottom: 24px;
         }
 
         .game-card {
-            background: #ffffff;
+            background: rgba(255, 253, 252, 0.92);
+            backdrop-filter: blur(14px);
             border-radius: 20px;
-            padding: 16px;
+            padding: 13px 15px;
             display: flex;
             align-items: center;
-            gap: 14px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.04);
+            gap: 13px;
+            box-shadow:
+                0 2px 4px rgba(150, 90, 110, 0.06),
+                0 10px 26px rgba(196, 96, 124, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.9);
             cursor: pointer;
             touch-action: manipulation;
-            transition: transform 0.15s ease;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
         }
         .game-card:active {
             transform: scale(0.98);
         }
+        @media (hover: hover) and (pointer: fine) {
+            .game-card:hover {
+                transform: translateY(-2px);
+                box-shadow:
+                    0 4px 8px rgba(150, 90, 110, 0.08),
+                    0 16px 34px rgba(196, 96, 124, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+            }
+        }
 
         .game-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
+            width: 54px;
+            height: 54px;
+            border-radius: 17px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
+            font-size: 27px;
             flex-shrink: 0;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+            position: relative;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+        .game-icon::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(150deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.06) 45%, rgba(255, 255, 255, 0) 62%);
+            pointer-events: none;
         }
 
         .game-info {
             flex: 1;
+            min-width: 0;
         }
 
         .game-title-row {
             display: flex;
             align-items: center;
             gap: 6px;
+            flex-wrap: wrap;
         }
 
         .game-title {
-            font-size: 16px;
+            font-size: 15.5px;
             font-weight: 800;
-            color: var(--text-dark);
+            color: var(--ink);
+            letter-spacing: -0.2px;
         }
 
         .badge-hot {
             font-size: 10px;
             font-weight: 800;
-            color: #FF3B30;
-            background: #FFE5E5;
-            padding: 2px 6px;
-            border-radius: 6px;
+            letter-spacing: 0.2px;
+            color: #C93B60;
+            background: rgba(255, 107, 139, 0.15);
+            padding: 2px 8px;
+            border-radius: 999px;
         }
 
         .game-desc {
             font-size: 12px;
-            color: var(--text-muted);
+            color: var(--ink-soft);
             margin-top: 4px;
-            line-height: 1.3;
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .enter-btn {
-            background: #F2F2F7;
-            color: var(--pink-main);
+            background: linear-gradient(145deg, #FFEEF3, #FFE0E8);
+            color: var(--pink-deep);
             font-weight: 800;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 33px;
+            height: 33px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 19px;
+            flex-shrink: 0;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 8px rgba(232, 78, 116, 0.18);
+            transition: all 0.18s ease;
+            font-family: Georgia, ui-serif, serif;
+            line-height: 1;
+            padding-bottom: 2px;
+        }
+        @media (hover: hover) and (pointer: fine) {
+            .game-card:hover .enter-btn {
+                background: linear-gradient(145deg, #FF7C98, #FF5C83);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(232, 78, 116, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            }
         }
 
         /* 统一子游戏容器 */
@@ -920,56 +1021,78 @@
             background: rgba(255, 255, 255, 0.15);
             color: #E2E8F0;
         }
-        /* ================= 联网对战：模式选择弹层 ================= */
+        /* ================= 模式选择弹层 (毛玻璃底部抽屉) ================= */
         .sheet-backdrop {
-            position: absolute; inset: 0; background: rgba(15, 17, 26, 0.5);
+            position: absolute; inset: 0; background: rgba(46, 30, 40, 0.42);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
             z-index: 200; display: none; align-items: flex-end; justify-content: center;
         }
         .sheet-card {
-            width: 100%; background: #ffffff; border-radius: 26px 26px 0 0;
-            padding: 22px 20px calc(env(safe-area-inset-bottom, 14px) + 20px);
-            animation: sheetUp 0.25s ease;
+            width: 100%; background: rgba(255, 252, 251, 0.96);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px 28px 0 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.85);
+            padding: 18px 20px calc(env(safe-area-inset-bottom, 14px) + 22px);
+            animation: sheetUp 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+            box-shadow: 0 -12px 40px rgba(90, 50, 70, 0.18);
         }
-        @keyframes sheetUp { from { transform: translateY(48px); opacity: 0.4; } to { transform: none; opacity: 1; } }
-        .sheet-grab { width: 42px; height: 5px; border-radius: 3px; background: #E5E5EA; margin: 0 auto 14px; }
+        @keyframes sheetUp { from { transform: translateY(60px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+        .sheet-grab { width: 44px; height: 5px; border-radius: 3px; background: #E8DDE1; margin: 0 auto 16px; }
+        .sheet-head-name { font-weight: 900; font-size: 17px; color: var(--ink); }
+        .sheet-head-sub { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
         .mode-btn {
-            display: flex; align-items: center; gap: 14px; padding: 15px 16px;
-            border-radius: 18px; margin-top: 12px; cursor: pointer; touch-action: manipulation;
-            transition: transform 0.12s ease;
+            display: flex; align-items: center; gap: 14px; padding: 14px 15px;
+            border-radius: 20px; margin-top: 10px; cursor: pointer; touch-action: manipulation;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            transition: transform 0.14s ease, box-shadow 0.18s ease;
         }
-        .mode-btn:active { transform: scale(0.97); }
+        .mode-btn:active { transform: scale(0.975); }
         .mode-btn .m-ico {
-            width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; font-size: 25px;
+            width: 48px; height: 48px; border-radius: 15px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
         }
-        .mode-btn .m-t { font-weight: 800; font-size: 15px; color: var(--text-dark); }
-        .mode-btn .m-d { font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.3; }
-        .mode-local { background: linear-gradient(135deg, #FFF0F4, #FFE9EE); }
-        .mode-ai { background: linear-gradient(135deg, #F0FDF4, #DCFCE7); }
-        .mode-online { background: linear-gradient(135deg, #EEF3FF, #E6EEFF); }
+        .mode-btn .m-t { font-weight: 800; font-size: 15px; color: var(--ink); }
+        .mode-btn .m-d { font-size: 12px; color: var(--ink-soft); margin-top: 3px; line-height: 1.35; }
+        .mode-local { background: linear-gradient(135deg, #FFF0F4, #FFE6EC); box-shadow: 0 8px 22px rgba(232, 78, 116, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+        .mode-local .m-ico { background: linear-gradient(145deg, #FFB3C4, #FF8DA5); }
+        .mode-ai { background: linear-gradient(135deg, #FFF7E8, #FFEFD6); box-shadow: 0 8px 22px rgba(226, 156, 64, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+        .mode-ai .m-ico { background: linear-gradient(145deg, #FFD79A, #FFB45E); }
+        .mode-online { background: linear-gradient(135deg, #F3EFFF, #E9E2FF); box-shadow: 0 8px 22px rgba(122, 96, 214, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+        .mode-online .m-ico { background: linear-gradient(145deg, #C6B8FF, #A892F6); }
+        @media (hover: hover) and (pointer: fine) {
+            .mode-btn:hover { transform: translateY(-1px); }
+            .mode-local:hover { box-shadow: 0 12px 28px rgba(232, 78, 116, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+            .mode-ai:hover { box-shadow: 0 12px 28px rgba(226, 156, 64, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+            .mode-online:hover { box-shadow: 0 12px 28px rgba(122, 96, 214, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+        }
 
         /* ================= 联网对战：配对面板 ================= */
         .net-panel {
             position: absolute; inset: 0; z-index: 220; display: none; flex-direction: column;
-            background: linear-gradient(180deg, #FFF0F4 0%, #FFFFFF 45%, #F2F6FF 100%);
+            background:
+                radial-gradient(480px 300px at 90% -8%, rgba(255, 171, 190, 0.45) 0%, rgba(255, 171, 190, 0) 60%),
+                radial-gradient(420px 300px at -6% 70%, rgba(224, 208, 255, 0.4) 0%, rgba(224, 208, 255, 0) 55%),
+                linear-gradient(175deg, #FFF3F6 0%, #FFF9F6 50%, #FBF6FF 100%);
             padding: calc(env(safe-area-inset-top, 20px) + 14px) 22px calc(env(safe-area-inset-bottom, 20px) + 18px);
         }
-        .net-panel-title { font-size: 22px; font-weight: 900; color: var(--text-dark); text-align: center; margin-top: 8px; }
-        .net-panel-sub { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 6px; line-height: 1.5; }
+        .net-panel-title { font-size: 22px; font-weight: 900; color: var(--ink); text-align: center; margin-top: 8px; }
+        .net-panel-sub { font-size: 13px; color: var(--ink-soft); text-align: center; margin-top: 6px; line-height: 1.5; }
         .net-code-big {
             font-size: 54px; font-weight: 900; letter-spacing: 10px; color: var(--pink-main);
             text-align: center; margin: 18px 0 4px; text-indent: 10px;
         }
-        .net-code-label { text-align: center; font-size: 12px; color: var(--text-muted); font-weight: 700; }
-        .net-status { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 14px; min-height: 20px; font-weight: 600; }
+        .net-code-label { text-align: center; font-size: 12px; color: var(--ink-soft); font-weight: 700; }
+        .net-status { text-align: center; font-size: 13px; color: var(--ink-soft); margin-top: 14px; min-height: 20px; font-weight: 600; }
         .net-input-row { display: flex; gap: 10px; margin-top: 14px; }
         .net-input-row input {
-            flex: 1; border: 2px solid #FFE0E6; border-radius: 16px; padding: 13px 10px;
+            flex: 1; border: 2px solid rgba(255, 107, 139, 0.25); border-radius: 16px; padding: 13px 10px;
             font-size: 24px; font-weight: 900; text-align: center; letter-spacing: 8px; text-indent: 8px;
-            text-transform: uppercase; outline: none; background: #fff; color: var(--text-dark);
+            text-transform: uppercase; outline: none; background: #fff; color: var(--ink);
             user-select: text; -webkit-user-select: text; min-width: 0;
+            box-shadow: inset 0 2px 8px rgba(150, 90, 110, 0.05);
         }
-        .net-input-row input:focus { border-color: var(--pink-main); }
+        .net-input-row input:focus { border-color: var(--pink-main); box-shadow: 0 0 0 4px rgba(255, 107, 139, 0.12); }
         .net-divider { display: flex; align-items: center; gap: 12px; color: #C7C7CC; font-size: 12px; margin: 20px 0 4px; font-weight: 700; }
         .net-divider::before, .net-divider::after { content: ''; flex: 1; height: 1px; background: #EDEDF0; }
         .net-big-btn {
@@ -1125,20 +1248,20 @@
                 <div style="display:flex; align-items:center; gap:12px;">
                     <div class="game-icon" id="sheetGameIcon" style="width:46px; height:46px; font-size:23px;">🎮</div>
                     <div>
-                        <div id="sheetGameName" style="font-weight:900; font-size:17px; color:var(--text-dark);">选择游玩方式</div>
-                        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">同屏双人 or 跨设备联机，随时切换</div>
+                        <div class="sheet-head-name" id="sheetGameName">选择游玩方式</div>
+                        <div class="sheet-head-sub">同屏双人 or 跨设备联机，随时切换</div>
                     </div>
                 </div>
                 <div class="mode-btn mode-local" onclick="startLocalGame()">
-                    <div class="m-ico" style="background:#ffffff;">📱</div>
+                    <div class="m-ico">📱</div>
                     <div><div class="m-t">同屏对战</div><div class="m-d">两人在同一台设备上分屏对决，多指互不干扰</div></div>
                 </div>
                 <div class="mode-btn mode-ai" onclick="startAIGame()">
-                    <div class="m-ico" style="background:#ffffff;">🤖</div>
+                    <div class="m-ico">🤖</div>
                     <div><div class="m-t">单人练习 (智能 AI 陪练)</div><div class="m-d">一人也能爽快畅玩，智能机器人自动迎战</div></div>
                 </div>
                 <div class="mode-btn mode-online" onclick="openNetPanel()">
-                    <div class="m-ico" style="background:#ffffff;">🌐</div>
+                    <div class="m-ico">🌐</div>
                     <div><div class="m-t">联机对战</div><div class="m-d">创建房间或输入 4 位房码，跨设备远程实时对决</div></div>
                 </div>
             </div>
@@ -1188,15 +1311,17 @@
         <!-- 大厅 -->
         <div id="lobby-view">
             <div class="header">
-                <div class="header-title">
-                    <span>🎮</span>
-                    <span>Happy Games</span>
+                <div class="header-topline">
+                    <div class="header-brand">
+                        <div class="header-logo">💞</div>
+                        <div class="header-title">Happy Games</div>
+                    </div>
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span>同屏 + 联机就绪</span>
+                    </div>
                 </div>
-                <div class="header-subtitle">同屏对战 · 联机对决 · 20 款精选双人游戏</div>
-                <div class="status-badge">
-                    <span class="status-dot"></span>
-                    <span>双模式就绪：同屏 + 联机实时对战</span>
-                </div>
+                <div class="header-subtitle">情侣双人游戏厅 · 同屏对战 / 联机对决 · 共 21 款</div>
             </div>
 
             <!-- 分类 -->
@@ -1218,7 +1343,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">DualCourt 乒乓 3D (Swipe Hit)</span>
-                            <span class="badge-hot" style="background:#10B981; color:white;">3D 手感</span>
+                            <span class="badge-hot">3D 手感</span>
                         </div>
                         <div class="game-desc">滑动击球 · 上旋/削球/侧旋 · 马格努斯弧线与时机判定</div>
                     </div>
@@ -1231,7 +1356,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">DualCourt 网球 3D (Triple Surface)</span>
-                            <span class="badge-hot" style="background:#84CC16; color:#064E3B;">三场地</span>
+                            <span class="badge-hot">三场地</span>
                         </div>
                         <div class="game-desc">硬地/红土/草地 · 越肩追踪视角 · 上旋抽击与放小球博弈</div>
                     </div>
@@ -1257,7 +1382,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">微型坦克对决 (Micro Tanks)</span>
-                            <span class="badge-hot" style="background:#2ED573; color:white;">世界风靡</span>
+                            <span class="badge-hot">世界风靡</span>
                         </div>
                         <div class="game-desc">经典同屏双人开炮 · 墙体子弹反弹射击与走位博弈</div>
                     </div>
@@ -1270,7 +1395,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">四子棋 (Connect Four)</span>
-                            <span class="badge-hot" style="background:#5352ED; color:white;">全球经典</span>
+                            <span class="badge-hot">全球经典</span>
                         </div>
                         <div class="game-desc">世界殿堂级双人桌游 · 垂直重力落子四连珠夺冠</div>
                     </div>
@@ -1283,7 +1408,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">极速反应拍拍 (Reaction Duel)</span>
-                            <span class="badge-hot" style="background:#FFA502; color:white;">情侣心跳</span>
+                            <span class="badge-hot">情侣心跳</span>
                         </div>
                         <div class="game-desc">屏幕变色瞬间拼手速 · 抢拍即赢，误触自爆惩罚</div>
                     </div>
@@ -1296,7 +1421,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">贪吃蛇大乱斗 (Snake 1v1)</span>
-                            <span class="badge-hot" style="background:#00D2D3; color:white;">双人对竞</span>
+                            <span class="badge-hot">双人对竞</span>
                         </div>
                         <div class="game-desc">同屏双蛇争夺爱心糖果 · 蛇身越吃越长，封堵对手走位</div>
                     </div>
@@ -1309,7 +1434,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">默契共振 (Sync Mind)</span>
-                            <span class="badge-hot" style="color:#9B51E0; background:#F4EBFF;">必玩</span>
+                            <span class="badge-hot">必玩</span>
                         </div>
                         <div class="game-desc">背对背二选一 · 默契加分，意见不一触发甜蜜惩罚</div>
                     </div>
@@ -1334,7 +1459,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">五子棋 (Gomoku)</span>
-                            <span class="badge-hot" style="background:#455A64; color:white;">千年国粹</span>
+                            <span class="badge-hot">千年国粹</span>
                         </div>
                         <div class="game-desc">十五路棋盘黑白对弈 · 先连五子者胜</div>
                     </div>
@@ -1347,7 +1472,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">黑白棋 (Reversi)</span>
-                            <span class="badge-hot" style="color:#6C5CE7; background:#F0EDFF;">烧脑策略</span>
+                            <span class="badge-hot">烧脑策略</span>
                         </div>
                         <div class="game-desc">夹击翻转占领棋盘 · 结束时棋子多者获胜</div>
                     </div>
@@ -1360,7 +1485,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">点格棋 (Dots &amp; Boxes)</span>
-                            <span class="badge-hot" style="background:#FFA502; color:white;">童年回忆</span>
+                            <span class="badge-hot">童年回忆</span>
                         </div>
                         <div class="game-desc">轮流连线围格子 · 完成一格占领后再走一步</div>
                     </div>
@@ -1373,7 +1498,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">记忆翻牌 (Memory Match)</span>
-                            <span class="badge-hot" style="color:#E84393; background:#FDEFF5;">甜蜜考验</span>
+                            <span class="badge-hot">甜蜜考验</span>
                         </div>
                         <div class="game-desc">翻牌配对比拼记性 · 配对成功额外再翻一张</div>
                     </div>
@@ -1386,7 +1511,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">空气曲棍球 (Air Hockey)</span>
-                            <span class="badge-hot" style="background:#00B4DB; color:white;">指上冰球</span>
+                            <span class="badge-hot">指上冰球</span>
                         </div>
                         <div class="game-desc">指尖冰球极速对轰 · 弹射与防守一击制胜</div>
                     </div>
@@ -1399,7 +1524,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">打砖块对决 (Breakout Duel)</span>
-                            <span class="badge-hot" style="background:#E17055; color:white;">经典街机</span>
+                            <span class="badge-hot">经典街机</span>
                         </div>
                         <div class="game-desc">双人砖墙攻防大战 · 先击碎对方砖阵者获胜</div>
                     </div>
@@ -1412,7 +1537,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">竞速躲避 (Turbo Racer)</span>
-                            <span class="badge-hot" style="background:#0984E3; color:white;">风驰电掣</span>
+                            <span class="badge-hot">风驰电掣</span>
                         </div>
                         <div class="game-desc">同款赛道极速闪避 · 先撞车者输，抢先冲线者赢</div>
                     </div>
@@ -1425,7 +1550,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">俄罗斯方块对决 (Tetris Duel)</span>
-                            <span class="badge-hot" style="background:#6C5CE7; color:white;">双井对抗</span>
+                            <span class="badge-hot">双井对抗</span>
                         </div>
                         <div class="game-desc">双井消行实时对抗 · 垫高对手逼其爆仓</div>
                     </div>
@@ -1438,7 +1563,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">你画我猜 (Draw &amp; Guess)</span>
-                            <span class="badge-hot" style="color:#00B894; background:#E9FBF5;">默契考验</span>
+                            <span class="badge-hot">默契考验</span>
                         </div>
                         <div class="game-desc">一人执笔一人猜 · 四选一抢答心有灵犀</div>
                     </div>
@@ -1464,7 +1589,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">迷宫竞速 (Maze Race)</span>
-                            <span class="badge-hot" style="background:#5352ED; color:white;">极速迷宫</span>
+                            <span class="badge-hot">极速迷宫</span>
                         </div>
                         <div class="game-desc">同一座迷宫分头冲刺 · 抢先到达中心宝藏</div>
                     </div>
@@ -1477,7 +1602,7 @@
                     <div class="game-info">
                         <div class="game-title-row">
                             <span class="game-title">双人跑酷 (DuoDash 3D)</span>
-                            <span class="badge-hot" style="background:#A66BFF; color:white;">3D 竞速</span>
+                            <span class="badge-hot">3D 竞速</span>
                         </div>
                         <div class="game-desc">三轨道伪3D跑酷大作战 · 跳跃滑铲躲障碍 · 导弹香蕉互坑抢先冲线</div>
                     </div>
