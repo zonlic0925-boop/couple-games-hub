@@ -4,8 +4,8 @@
   "description": "世界经典双人同屏对抗与情侣互动游戏合集 (Ping Pong, Micro Tanks, Grand Slam Tennis, Connect 4 & more)",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0B0F19",
-  "theme_color": "#0B0F19",
+  "background_color": "#FFF1F5",
+  "theme_color": "#FFF1F5",
   "orientation": "portrait-primary",
   "icons": [
     {

@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Happy Games">
     <meta name="application-name" content="Happy Games">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0B0F19">
+    <meta name="theme-color" content="#FFF1F5">
+    <meta name="color-scheme" content="light">
     <title>Happy Games - 世界经典双人小游戏</title>
     <!-- PWA & Apple Touch Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -49,18 +50,22 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #15161E;
+            background: #FFF1F5;
+            background-color: #FFF1F5;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
+            overscroll-behavior: none;
         }
 
         /* 移动端全屏铺满，桌面端展示模拟手机 */
         .app-viewport {
-            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             height: 100dvh;
-            height: 100vh;
             background: #ffffff;
-            position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -76,11 +81,16 @@
                 align-items: center;
             }
             .app-viewport {
+                position: fixed;
                 width: 390px;
                 height: min(800px, calc(100vh - 40px));
                 border-radius: 44px;
                 box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
                 border: 8px solid #2C2C2E;
+                inset: auto;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
             }
         }
         /* 平板 / 大屏响应式：大厅卡片网格化 */
@@ -92,13 +102,13 @@
                 width: 100%;
                 max-width: 780px;
             }
-            #lobby-view > .category-scroll { padding-left: 18px; padding-right: 18px; }
+            #lobby-view > .category-scroll { padding-left: 20px; padding-right: 20px; }
             .game-list {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
-                gap: 14px;
-                padding-left: 18px;
-                padding-right: 18px;
+                gap: 16px;
+                padding-left: 20px;
+                padding-right: 20px;
             }
             .header-title { font-size: 30px; }
             .header-logo { width: 46px; height: 46px; font-size: 25px; }
@@ -123,15 +133,17 @@
                 radial-gradient(460px 320px at -10% 22%, rgba(255, 210, 224, 0.6) 0%, rgba(255, 210, 224, 0) 55%),
                 radial-gradient(520px 380px at 110% 60%, rgba(224, 208, 255, 0.45) 0%, rgba(224, 208, 255, 0) 60%),
                 linear-gradient(175deg, #FFF1F5 0%, #FFF9F6 46%, #FBF6FF 100%);
-            padding: calc(env(safe-area-inset-top, 20px) + 14px) 18px calc(env(safe-area-inset-bottom, 20px) + 12px);
+            padding: calc(env(safe-area-inset-top, 20px) + 16px) 20px calc(env(safe-area-inset-bottom, 20px) + 30px);
             overflow-y: auto;
+            overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
             z-index: 10;
         }
 
         .header {
             text-align: left;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            padding-top: 4px;
         }
 
         .header-topline {
@@ -143,36 +155,36 @@
         .header-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 11px;
         }
 
         .header-logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
+            width: 46px;
+            height: 46px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 23px;
+            font-size: 25px;
             background: linear-gradient(145deg, #FF8DA5, #FF5F84);
             box-shadow: 0 8px 18px rgba(232, 78, 116, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45);
             flex-shrink: 0;
         }
 
         .header-title {
-            font-size: 26px;
+            font-size: 27px;
             font-weight: 900;
-            letter-spacing: -0.4px;
+            letter-spacing: -0.5px;
             color: var(--ink);
             line-height: 1.1;
         }
 
         .header-subtitle {
-            font-size: 12.5px;
+            font-size: 13px;
             color: var(--ink-soft);
-            margin-top: 6px;
+            margin-top: 7px;
             font-weight: 600;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
             text-align: left;
             white-space: nowrap;
             overflow: hidden;
@@ -207,22 +219,23 @@
         /* 分类切换 (毛玻璃胶囊) */
         .category-scroll {
             display: flex;
-            gap: 8px;
+            gap: 9px;
             overflow-x: auto;
-            padding: 2px 0 14px;
+            padding: 2px 0 16px;
             scrollbar-width: none;
+            flex-shrink: 0;
         }
         .category-scroll::-webkit-scrollbar { display: none; }
 
         .category-chip {
             flex-shrink: 0;
-            padding: 8px 15px;
+            padding: 9px 17px;
             background: rgba(255, 255, 255, 0.72);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.9);
             border-radius: 999px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--ink-soft);
             cursor: pointer;
             touch-action: manipulation;
@@ -248,18 +261,18 @@
         .game-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding-bottom: 24px;
+            gap: 13px;
+            padding-bottom: 10px;
         }
 
         .game-card {
             background: rgba(255, 253, 252, 0.92);
             backdrop-filter: blur(14px);
-            border-radius: 20px;
-            padding: 13px 15px;
+            border-radius: 22px;
+            padding: 15px 16px;
             display: flex;
             align-items: center;
-            gap: 13px;
+            gap: 14px;
             box-shadow:
                 0 2px 4px rgba(150, 90, 110, 0.06),
                 0 10px 26px rgba(196, 96, 124, 0.14),
@@ -283,13 +296,13 @@
         }
 
         .game-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 17px;
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 27px;
+            font-size: 29px;
             flex-shrink: 0;
             position: relative;
             box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
@@ -310,13 +323,14 @@
 
         .game-title-row {
             display: flex;
-            align-items: center;
-            gap: 6px;
+            align-items: baseline;
+            gap: 7px;
             flex-wrap: wrap;
+            min-width: 0;
         }
 
         .game-title {
-            font-size: 15.5px;
+            font-size: 16px;
             font-weight: 800;
             color: var(--ink);
             letter-spacing: -0.2px;
@@ -328,15 +342,16 @@
             letter-spacing: 0.2px;
             color: #C93B60;
             background: rgba(255, 107, 139, 0.15);
-            padding: 2px 8px;
+            padding: 2.5px 8px;
             border-radius: 999px;
+            flex-shrink: 0;
         }
 
         .game-desc {
-            font-size: 12px;
+            font-size: 12.5px;
             color: var(--ink-soft);
-            margin-top: 4px;
-            line-height: 1.4;
+            margin-top: 5px;
+            line-height: 1.45;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -347,12 +362,12 @@
             color: var(--pink-deep);
             font-weight: 800;
             border-radius: 50%;
-            width: 33px;
-            height: 33px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 19px;
+            font-size: 20px;
             flex-shrink: 0;
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 8px rgba(232, 78, 116, 0.18);
             transition: all 0.18s ease;
